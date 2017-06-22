@@ -1,0 +1,27 @@
+{
+  "name": "bookchain-web-client",
+  "version": "1.0.0",
+  "description": "web client for bookchain.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kbc-itw/BookChain.git"
+  },
+  "author": "kbc-itw",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kbc-itw/BookChain/issues"
+  },
+  "homepage": "https://github.com/kbc-itw/BookChain#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "ts-loader": "^2.2.0",
+    "tslint": "^5.4.3",
+    "tslint-loader": "^3.5.3",
+    "typescript": "^2.3.4",
+    "webpack": "^3.0.0"
+  }
+}
