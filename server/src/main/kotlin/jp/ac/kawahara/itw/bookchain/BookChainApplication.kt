@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-class BookchainApplication
+class BookChainApplication
 
 fun main(args: Array<String>) {
-    SpringApplication.run(BookchainApplication::class.java, *args)
+    SpringApplication.run(BookChainApplication::class.java, *args)
 }
