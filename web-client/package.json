@@ -4,7 +4,8 @@
   "description": "web client for bookchain.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -19,8 +20,11 @@
   "dependencies": {},
   "devDependencies": {
     "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.6",
+    "@types/webpack": "^3.0.1",
     "mocha": "^3.4.2",
     "ts-loader": "^2.2.1",
+    "ts-node": "^3.1.0",
     "tslint": "^5.4.3",
     "tslint-loader": "^3.5.3",
     "typescript": "^2.4.1",
