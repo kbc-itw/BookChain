@@ -3,4 +3,5 @@ node_modules
 src/*.js
 test/*.js
 dist
+report
 *.log

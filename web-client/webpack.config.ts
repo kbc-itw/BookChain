@@ -42,11 +42,11 @@ function output(): Output {
 
 // デバッグ強化開発者用ツール
 // ソースマップを出力するか否か。
-function devTool(): "source-map" | boolean {
+function devTool(): "inline-source-map" | boolean {
     if (inProduction) {
         return false;
     } else {
-        return "source-map";
+        return "inline-source-map";
     }
 }
 
@@ -86,6 +86,12 @@ const config: Configuration = {
                 test: /\.tsx?$/,
                 loader: "ts-loader"
             },
+            {
+                enforce: "post",
+                test: /.tsx?$/,
+                exclude: /(test|node_modules)/,
+                loader: "istanbul-instrumenter-loader"
+            }
         ]
     },
     plugins: plugins()
