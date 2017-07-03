@@ -1,88 +1,91 @@
-// Karma configuration
-// Generated on Mon Jul 03 2017 12:15:09 GMT+0900 (JST)
+/**
+ * @fileoverview Karma用の設定スクリプト
+ */
 
 
-// webpack.config.tsの設定を、entryの情報だけ変更して流用
+// ここからコンパイル型情報の調整用スクリプト
+import * as karma from "karma";
+import * as karmaCoverage from "karma-coverage";
+import * as webpack from "webpack";
+
+// @types/karma-webpackはなかったのでここで作成
+// webpack用のオプションを設定できるようにする
+namespace karmaWebpack {
+    export interface ConfigOptions extends karma.ConfigOptions {
+        webpack: webpack.Configuration;
+    }
+}
+
+// 必要なプラグイン（ここでは karma-coverage と、 karma-webpack）
+// の設定情報をすべて記載できるように取り込んだインターフェース
+interface ConfigThisCase extends karma.Config {
+    set: (config: karmaCoverage.ConfigOptions & karmaWebpack.ConfigOptions) => void;
+}
+// ここまで型情報調整用スクリプト
+
+
+// webpack.config.tsの設定を、entryの情報だけ削除して流用する。
 // https://github.com/webpack-contrib/karma-webpack/issues/231#issuecomment-285713701
-const webpackConfig = require('./webpack.config').default;
-webpackConfig.entry = null;
+import webpackConfig from "./webpack.config";
+delete webpackConfig.entry;
 
 
-module.exports = function (config) {
+module.exports = (config: ConfigThisCase) => {
     config.set({
 
-        // base path that will be used to resolve all patterns (eg. files, exclude)
-        basePath: '',
+        // 相対パスを解釈する際の基準 (files, excludeなどで使われる)
+        basePath: "",
 
+        // 使用するテストフレームワーク
+        frameworks: ["jasmine"],
 
-        // frameworks to use
-        // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['jasmine'],
-
-
-        // list of files / patterns to load in the browser
+        // ファイルのリスト　か　ブラウザに読ませるパターン
         files: [
-            'test/*.ts'
+            "test/*.ts"
         ],
 
-
-        // list of files to exclude
+        // 除外するファイル
         exclude: [],
 
-
-        // preprocess matching files before serving them to the browser
-        // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+        // ブラウザに渡す前になんかしら処理するやつら
         preprocessors: {
-            'test/*.ts': ['webpack', 'sourcemap']
+            "test/*.ts": ["webpack", "sourcemap"]
         },
 
+        // テスト結果を伝える相手
+        reporters: ["mocha", "coverage"],
 
-        // test results reporter to use
-        // possible values: 'dots', 'progress'
-        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['mocha', 'coverage'],
-
-
+        // カバレッジをだすレポーターの設定
         coverageReporter: {
-            dir: 'report',
+            dir: "report",
             reporters: [
-                {type: 'html'},
-                {type: 'cobertura'}
+                { type: "html" },
+                { type: "cobertura" }
             ]
         },
 
-
+        // webpack用の設定
         webpack: webpackConfig,
-
 
         // web server port
         port: 9876,
 
-
-        // enable / disable colors in the output (reporters and logs)
+        // レポーターとかログを色付きで表示するか
         colors: true,
 
-
-        // level of logging
-        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+        // ログレベル設定
         logLevel: config.LOG_INFO,
 
-
-        // enable / disable watching file and executing tests whenever any file changes
+        // ファイルの変更を検知して勝手に動くかどうか
         autoWatch: true,
 
+        // 起動するブラウザ
+        browsers: ["PhantomJS"],
 
-        // start these browsers
-        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['PhantomJS'],
-
-
-        // Continuous Integration mode
-        // if true, Karma captures browsers, runs the tests and exits
+        // CIするならtrueとかなんとか
         singleRun: true,
 
-        // Concurrency level
-        // how many browser should be started simultaneous
+        // ブラウザをいくつまで並行で立ち上げるか
         concurrency: Infinity
-    })
+    });
 };
