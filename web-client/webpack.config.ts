@@ -28,13 +28,13 @@ function entry(): Entry {
 function output(): Output {
     if (inProduction) {
         return {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.min.js'
+            path: path.resolve(__dirname, "dist"),
+            filename: "[name].bundle.min.js"
         };
     } else {
         return {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.js'
+            path: path.resolve(__dirname, "dist"),
+            filename: "[name].bundle.js"
         };
     }
 }
@@ -73,14 +73,19 @@ const config: Configuration = {
     output: output(),
     devtool: devTool(),
     resolve: {
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: [".ts", ".tsx", ".js"]
     },
     module: {
         rules: [
             {
+                enforce: "pre",
                 test: /\.tsx?$/,
-                loader: 'ts-loader'
-            }
+                loader: "tslint-loader"
+            },
+            {
+                test: /\.tsx?$/,
+                loader: "ts-loader"
+            },
         ]
     },
     plugins: plugins()
