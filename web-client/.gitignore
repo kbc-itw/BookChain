@@ -1,7 +1,12 @@
+# Node.js関係
 node_modules
-*.js.map
+*.log
+
+# TypeScriptでコンパイルされるたもの関係
 src/*.js
 test/*.js
+*.js.map
+
+# Webpack, Karmaなどの関係
 dist
 report
-*.log
