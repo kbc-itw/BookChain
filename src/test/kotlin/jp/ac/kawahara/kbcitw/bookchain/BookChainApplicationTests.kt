@@ -1,4 +1,4 @@
-package jp.ac.kawahara.itw.bookchain
+package jp.ac.kawahara.kbcitw.bookchain
 
 import org.junit.Test
 import org.junit.runner.RunWith

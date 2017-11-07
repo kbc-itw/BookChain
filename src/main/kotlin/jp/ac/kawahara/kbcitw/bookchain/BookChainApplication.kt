@@ -1,10 +1,10 @@
-package jp.ac.kawahara.itw.bookchain
+package jp.ac.kawahara.kbcitw.bookchain
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
-class BookChainApplication
+open class BookChainApplication
 
 fun main(args: Array<String>) {
     SpringApplication.run(BookChainApplication::class.java, *args)
