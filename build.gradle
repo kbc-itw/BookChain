@@ -44,4 +44,5 @@ dependencies {
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
 	compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	compile('org.hyperledger.fabric-sdk-java:fabric-sdk-java:1.0.1')
 }
