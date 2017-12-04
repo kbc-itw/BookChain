@@ -1,0 +1,27 @@
+{
+  "name": "bookchain",
+  "version": "1.0.0",
+  "description": "図書貸し借りシステム",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kbc-itw/BookChain.git"
+  },
+  "author": "kbc-itw",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kbc-itw/BookChain/issues"
+  },
+  "homepage": "https://github.com/kbc-itw/BookChain#readme",
+  "dependencies": {
+    "source-map-support": "^0.5.0"
+  },
+  "devDependencies": {
+    "tslint": "^5.8.0",
+    "typedoc": "^0.9.0",
+    "typescript": "^2.6.2"
+  }
+}
