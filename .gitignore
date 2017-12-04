@@ -3,3 +3,6 @@
 *.iws
 *.iml
 *.ipr
+
+### npm ###
+node_modules
