@@ -4,7 +4,9 @@
   "description": "図書貸し借りシステム",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "istanbul cover node_modules/mocha/bin/_mocha",
+    "pretest":"tsc",
+    "posttest": "remap-istanbul -i coverage/coverage.json -o htmp-report -t html",
     "build": "tsc",
     "start": "node index.js"
   },
