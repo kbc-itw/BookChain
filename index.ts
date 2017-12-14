@@ -1,4 +1,7 @@
 import * as express from 'express';
+import * as smp from 'source-map-support';
+
+smp.install();
 
 const app = express();
 
