@@ -37,6 +37,7 @@ async function prepareConnection(): Promise<void> {
 /**
  * chainCodeに対しクエリを実行する。
  * @param request クエリ用リクエスト
+ * @returns 投げたクエリに対応する関数が返す値で解決されるPromise
  */
 export async function chainCodeQuery(request: ChaincodeQueryRequest): Promise<any> {
 
@@ -58,6 +59,8 @@ export async function chainCodeQuery(request: ChaincodeQueryRequest): Promise<an
 
 /**
  * chainCodeに対しトランザクションを実行する。
+ * @param requestForProposal トランザクション実行用リクエスト
+ * @returns トランザクションが成功した場合に解決されるPromise
  */
 export async function chainCodeInvoke(requestForProposal: ChaincodeInvokeRequest): Promise<void> {
     await prepareConnection();
