@@ -24,6 +24,7 @@
   "dependencies": {
     "config": "^1.28.1",
     "express": "^4.16.2",
+    "fabric-client": "^1.1.0-preview",
     "source-map-support": "^0.5.0"
   },
   "devDependencies": {
