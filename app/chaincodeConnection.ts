@@ -34,6 +34,10 @@ async function prepareConnection(): Promise<void> {
 
 }
 
+/**
+ * chainCodeに対しクエリを実行する。
+ * @param request クエリ用リクエスト
+ */
 export async function chainCodeQuery(request: ChaincodeQueryRequest): Promise<any> {
 
     await prepareConnection();
@@ -52,6 +56,9 @@ export async function chainCodeQuery(request: ChaincodeQueryRequest): Promise<an
 }
 
 
+/**
+ * chainCodeに対しトランザクションを実行する。
+ */
 export async function chainCodeInvoke(requestForProposal: ChaincodeInvokeRequest): Promise<void> {
     await prepareConnection();
 
