@@ -9,3 +9,9 @@ node_modules
 
 ### tsc ###
 *.js
+*.map
+
+
+### test ###
+.nyc_output
+coverage
