@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover node_modules/mocha/bin/_mocha",
-    "pretest":"tsc",
+    "pretest": "tsc",
     "posttest": "remap-istanbul -i coverage/coverage.json -o htmp-report -t html",
     "build": "tsc",
     "start": "node index.js"
@@ -33,9 +33,7 @@
     "@types/source-map-support": "^0.4.0",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
-    "istanbul": "^0.4.5",
     "mocha": "^4.0.1",
-    "remap-istanbul": "^0.9.5",
     "sinon": "^4.1.3",
     "tslint": "^5.8.0",
     "tslint-config-airbnb": "^5.4.2",
