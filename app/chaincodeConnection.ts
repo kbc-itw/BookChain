@@ -34,7 +34,7 @@ async function prepareConnection(): Promise<void> {
 
 }
 
-export async function chainCodeQuery(request: any): Promise<any> {
+export async function chainCodeQuery(request: ChaincodeQueryRequest): Promise<any> {
 
     await prepareConnection();
 
@@ -52,13 +52,13 @@ export async function chainCodeQuery(request: any): Promise<any> {
 }
 
 
-export async function chainCodeInvoke(requestForProposal: any): Promise<void> {
+export async function chainCodeInvoke(requestForProposal: ChaincodeInvokeRequest): Promise<void> {
     await prepareConnection();
 
     const transactionID = client.newTransactionID();
     const transactionIDString = transactionID.getTransactionID();
     
-    requestForProposal.transactionID = transactionID;
+    requestForProposal.txId = transactionID;
 
     const proposalResults = await channel.sendTransactionProposal(requestForProposal);
 
