@@ -2,6 +2,7 @@
     "extends": "tslint-config-airbnb",
     "rules": {
         "ter-indent": [true, 4],
-        "max-line-length": [true, 140]
+        "max-line-length": [true, 140],
+        "align":[false]
     }
 }
