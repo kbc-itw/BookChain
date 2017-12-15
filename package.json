@@ -4,11 +4,12 @@
   "description": "図書貸し借りシステム",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive --require ts-node/register \"test/**/*.ts\"",
-    "test:watch": "mocha --recursive --require ts-node/register \"test/**/*.ts\" --watch --watch-extensions ts",
-    "cover": "nyc npm t",
+    "test": "SET NODE_ENV=development&&mocha --recursive --require ts-node/register \"test/**/*.ts\"",
+    "test:watch": "SET NODE_ENV=development&&mocha --recursive --require ts-node/register \"test/**/*.ts\" --watch --watch-extensions ts",
+    "cover": "SET NODE_ENV=development&&nyc npm t NODE_ENV=development",
     "build": "tsc",
-    "start": "node index.js"
+    "start": "SET NODE_ENV=deployment&&node index.js",
+    "start:development": "SET NODE_ENV=development&&node index.js"
   },
   "repository": {
     "type": "git",
@@ -21,12 +22,14 @@
   },
   "homepage": "https://github.com/kbc-itw/BookChain#readme",
   "dependencies": {
+    "config": "^1.28.1",
     "express": "^4.16.2",
     "source-map-support": "^0.5.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.10",
     "@types/chai-http": "^3.0.3",
+    "@types/config": "0.0.33",
     "@types/express": "^4.0.39",
     "@types/mocha": "^2.2.44",
     "@types/sinon": "^4.1.2",
@@ -61,7 +64,7 @@
       "html",
       "text"
     ],
-    "sourceMap":true,
+    "sourceMap": true,
     "all": true
   }
-} 
+}
