@@ -1,0 +1,12 @@
+{
+    "chaincode": {
+        "channelName": "bookchain",
+        "userName": "user1",
+        "hostName": "localhost",
+        "peerPort": "7051",
+        "ordererPort": "7050",
+        "eventHubPort": "7053",
+        "pathStoreName": "hfc-key-store"
+    }
+}
+
