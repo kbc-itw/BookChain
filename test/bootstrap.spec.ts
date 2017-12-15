@@ -2,15 +2,18 @@ import * as chai from 'chai';
 import 'mocha';
 import { bootstrap } from '../app/bootstrap';
 import { Server } from 'http';
+import * as config from 'config';
+import { IServerConfig } from '../app/conig/IServerConfig';
 
 chai.use(require('chai-http'));
 
 describe('bootstrap', () => {
+    const serverConfig = config.get<IServerConfig>('server');
 
     let server: Server;
 
     before((done) => {
-        server = bootstrap().listen(5000, () => done());
+        server = bootstrap().listen(serverConfig.port, serverConfig.host, () => done());
     });
 
     after((done) => {
@@ -24,5 +27,4 @@ describe('bootstrap', () => {
                 chai.expect(res).to.be.a('Object');
             });
     });
-
 });
