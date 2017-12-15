@@ -8,7 +8,7 @@
     "test:watch": "mocha --recursive --require ts-node/register \"test/**/*.ts\" --watch --watch-extensions ts",
     "cover": "nyc npm t",
     "build": "tsc",
-    "start": "node index.js"
+    "start": "ts-node index.ts"
   },
   "repository": {
     "type": "git",
