@@ -55,7 +55,8 @@
       "app/**/*.ts"
     ],
     "exclude": [
-      "typings"
+      "typings",
+      "app/**/I*.ts"
     ],
     "extension": [
       ".ts"
