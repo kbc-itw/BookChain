@@ -7,6 +7,7 @@ import { IServerConfig } from '../../app/config/IServerConfig';
 import { createUserRouter } from '../../app/router/user';
 import { chainCodeQuery } from '../../app/chaincode-connection';
 import * as sinon from 'sinon';
+import { initializeLogger } from '../../app/logger';
 
 chai.use(require('chai-http'));
 
@@ -17,7 +18,9 @@ describe('userRouter /user', () => {
 
     const { port, host } = serverConfig;
 
-
+    before(() => {
+        initializeLogger();
+    });
     beforeEach((done) => {
         app = express();
         server = app.listen(port, host, () => done());

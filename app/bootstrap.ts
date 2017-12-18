@@ -2,6 +2,7 @@ import { Server } from 'http';
 import * as express from 'express';
 import { chainCodeQuery, chainCodeInvoke } from './chaincode-connection';
 import { createUserRouter } from './router/user';
+import { logTrace } from './logger';
 
 /**
  * listenで起動可能なexpressアプリケーションを返す。
@@ -12,6 +13,7 @@ export function bootstrap():express.Application {
     const app = express();
     configureUse(app);
     configureRoute(app);
+    logTrace('bootstrap完了');
     return app;
 }
 
