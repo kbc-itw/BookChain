@@ -10,22 +10,10 @@
     },
     "log4js": {
         "appenders": {
-            "system": {
+            "log": {
                 "type": "dateFile",
-                "filename": "../system.log"
-            },
-            "info": {
-                "type": "dateFile",
-                "filename": "../info.log"
-            },
-            "warn": {
-                "type": "dateFile",
-                "filename": "../warn.log"
-            },
-            "error": {
-                "type": "dateFile",
-                "filename": "../error.log"
-            },
+                "filename": "../bookchain.log"
+            }, 
             "console": {
                 "type": "console"
             },
@@ -36,42 +24,38 @@
         "categories": {
             "default": {
                 "appenders": [
-                    "system"
+                    "log",
+                    "console"
                 ],
                 "level": "INFO"
             },
             "trace": {
                 "appenders": [
-                    "console"
+                    "console",
+                    "log"
                 ],
                 "level": "TRACE"
             },
             "info": {
                 "appenders": [
-                    "info",
+                    "log",
                     "console"
                 ],
                 "level": "INFO"
             },
             "warn": {
                 "appenders": [
-                    "warn",
+                    "log",
                     "console"
                 ],
                 "level": "WARN"
             },
             "error": {
                 "appenders": [
-                    "error",
+                    "log",
                     "console"
                 ],
                 "level": "ERROR"
-            },
-            "system": {
-                "appenders": [
-                    "system"
-                ],
-                "level": "INFO"
             }
         }
     }

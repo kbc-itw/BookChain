@@ -2,41 +2,10 @@ import { configure, Configuration, getLogger } from 'log4js';
 import * as config from 'config';
 
 const initialized = false;
+const loggerConfig = config.get('log4js');
+configure(<LoggerConfig>loggerConfig);
+export const logger = getLogger((<LoggerConfig>loggerConfig).useLevel);
 
-/**
- * ロガーを初期化する。
- */
-export function initializeLogger():void {
-    const loggerConfig = config.get('log4js');
-    configure(<Configuration>loggerConfig);
+interface LoggerConfig extends Configuration {
+    readonly useLevel: string;
 }
-
-export function logTrace(message: string) {
-    const logger = getLogger('trace');
-    const system = getLogger('system');
-    logger.trace(message);
-    system.trace(message);
-}
-
-export function logInfo(message: string) {
-    const logger = getLogger('info');
-    const system = getLogger('system');
-    logger.info(message);
-    system.info(message);
-    
-}
-
-export function logWarn(message: string) {
-    const logger = getLogger('warn');
-    const system = getLogger('system');
-    logger.warn(message);
-    system.warn(message);
-}
-
-export function logError(message: string) {
-    const logger = getLogger('error');
-    const system = getLogger('system');
-    logger.error(message);
-    system.error(message);
-}
-
