@@ -7,32 +7,34 @@ export function createUserRouter(
     queryFunction: (request: ChaincodeQueryRequest) => Promise<any>, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>
 ): Router {
     const userRouter = Router();
-    userRouter.get('/', (req: Request, res: Response) => {
-        queryFunction({
-            ...queryBase,
-            fcn:'getUsersList',
-            args: [],
-        }).then((result) => {
+    userRouter.get('/', async (req: Request, res: Response) => {
+        try {
+            const result = await queryFunction({
+                ...queryBase,
+                fcn:'getUsersList',
+                args: [],
+            });
             res.json(result);
-        }).catch((err) => {
+        } catch (e) {
             res.status(500).json({ error: true });
-        });
+        }
     });
         
-    userRouter.get('/:host/:id', (req, res) => {
+    userRouter.get('/:host/:id', async (req, res) => {
         const host = req.params.host;
         const id = req.params.id;
 
         if (isFQDN(host) && isLocalID(id)) {
-            queryFunction({
-                ...queryBase,
-                fcn:'getUser',
-                args: [host, id],
-            }).then((result) => {
+            try {
+                const result = await queryFunction({
+                    ...queryBase,
+                    fcn:'getUser',
+                    args: [host, id],
+                });
                 res.status(200).json(result);
-            }).catch((err) => {
+            } catch (e) {
                 res.status(500).json({ error: true });
-            });
+            }
         } else {
             res.status(400).json({ error: true });
         }
