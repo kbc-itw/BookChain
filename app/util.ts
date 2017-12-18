@@ -1,7 +1,11 @@
+import * as ISBN from 'isbn-utils';
+
 export type FQDN = 'FQDN　特別にlocalhostも可';
 export type LocalID = '英数字とアンダーバーのみ利用可、4文字以上15文字以下';
 export type DisplayName = '1文字以上50文字以内の任意の文字列';
 export type Locator = '(UserID)@(FQDN)';
+export type ISBN = '13桁のISBN';
+
 
 const isDomainName = require('is-domain-name');
 
@@ -24,4 +28,12 @@ export function isLocator(locator: string): locator is Locator {
     }
     
     return isLocalID(separatedStrings[0]) && isFQDN(separatedStrings[1]);
+}
+
+export function isISBN(isbn: string): isbn is ISBN {
+    const parsed = ISBN.parse(isbn);
+    if (parsed !== null) {
+        return parsed.isIsbn13();
+    }
+    return false;
 }

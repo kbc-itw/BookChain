@@ -1,6 +1,6 @@
 import * as chai from'chai';
 import 'mocha';
-import { isFQDN, isLocalID, isDisplayName, isLocator } from '../app/util';
+import { isFQDN, isLocalID, isDisplayName, isLocator, isISBN } from '../app/util';
 
 describe('isFQDN', () => {
 
@@ -84,5 +84,26 @@ describe('isLocator', () => {
         chai.expect(isLocator('foobarfoobarfoob@kbc-itw.net')).to.equal(false);
         chai.expect(isLocator('foobar@kbc-<>itw.net')).to.equal(false);
         chai.expect(isLocator('foobarfoobarfoob@kbc-<>itw.net')).to.equal(false);
+    });
+});
+
+describe('isISBN', () => {
+    it('一般的なISBN', () => {
+        chai.expect(isISBN('978-4-06-263914-9')).to.equal(true);
+        chai.expect(isISBN('9784062639149')).to.equal(true);
+    });
+
+    it('10桁は通さない', () => {
+        chai.expect(isISBN('4062194074')).to.equal(false);
+        chai.expect(isISBN('4-062194-07-4')).to.equal(false);
+        
+    });
+
+    it('13桁でもISBNでない数字は通さない', () => {
+        chai.expect(isISBN('1234567890123')).to.equal(false);
+    });
+
+    it('そもそもISBNでない文字列は通さない', () => {
+        chai.expect(isISBN('hogehgoe')).to.equal(false);
     });
 });
