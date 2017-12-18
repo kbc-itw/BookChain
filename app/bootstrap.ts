@@ -1,5 +1,7 @@
 import { Server } from 'http';
 import * as express from 'express';
+import { chainCodeQuery, chainCodeInvoke } from './chaincode-connection';
+import { createUserRouter } from './router/user';
 
 /**
  * listenで起動可能なexpressアプリケーションを返す。
@@ -14,7 +16,7 @@ export function bootstrap():express.Application {
 }
 
 function configureRoute(app: express.Application) {
-    // ルータをここに追加
+//    app.use('/user', createUserRouter(chainCodeQuery, chainCodeInvoke));
 }
 
 function configureUse(app: express.Application) {

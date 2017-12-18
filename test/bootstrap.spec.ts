@@ -3,7 +3,7 @@ import 'mocha';
 import { bootstrap } from '../app/bootstrap';
 import { Server } from 'http';
 import * as config from 'config';
-import { IServerConfig } from '../app/conig/IServerConfig';
+import { IServerConfig } from '../app/config/IServerConfig';
 
 chai.use(require('chai-http'));
 
