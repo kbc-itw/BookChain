@@ -16,7 +16,7 @@ export function bootstrap():express.Application {
 }
 
 function configureRoute(app: express.Application) {
-    app.use('/user', createUserRouter(chainCodeQuery, chainCodeInvoke));
+//    app.use('/user', createUserRouter(chainCodeQuery, chainCodeInvoke));
 }
 
 function configureUse(app: express.Application) {
