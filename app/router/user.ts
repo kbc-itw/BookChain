@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { Request, Response } from 'express-serve-static-core';
 import { chainCodeQuery } from '../chaincode-connection';
 import { isLocalID, isFQDN } from '../util';
+import { logger } from '../logger';
 
 export function createUserRouter(
     queryFunction: (request: ChaincodeQueryRequest) => Promise<any>, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>
@@ -16,6 +17,7 @@ export function createUserRouter(
             });
             res.json(result);
         } catch (e) {
+            logger.error(`chainCodeエラー ${e}`);
             res.status(500).json({ error: true });
         }
     });
@@ -33,12 +35,16 @@ export function createUserRouter(
                 });
                 res.status(200).json(result);
             } catch (e) {
+                logger.error(`chainCodeエラー ${e}`);
                 res.status(500).json({ error: true });
             }
         } else {
+            logger.info(`/:host/:idへの不正なリクエスト host:${host} id:${id}`);
             res.status(400).json({ error: true });
         }
     });
+
+    logger.trace('bootstrap完了');
     return userRouter;
 }
 

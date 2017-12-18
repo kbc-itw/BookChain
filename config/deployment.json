@@ -2,5 +2,8 @@
     "server": {
         "host": "hoge",
         "port": 80
+    },
+    "log4js": {
+        "useLevel": "info"
     }
 }

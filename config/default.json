@@ -7,6 +7,57 @@
         "ordererPort": "7050",
         "eventHubPort": "7053",
         "pathStoreName": "hfc-key-store"
+    },
+    "log4js": {
+        "appenders": {
+            "log": {
+                "type": "dateFile",
+                "filename": "../bookchain.log"
+            }, 
+            "console": {
+                "type": "console"
+            },
+            "stdout": {
+              "type": "stdout"
+            }
+        },
+        "categories": {
+            "default": {
+                "appenders": [
+                    "log",
+                    "console"
+                ],
+                "level": "INFO"
+            },
+            "trace": {
+                "appenders": [
+                    "console",
+                    "log"
+                ],
+                "level": "TRACE"
+            },
+            "info": {
+                "appenders": [
+                    "log",
+                    "console"
+                ],
+                "level": "INFO"
+            },
+            "warn": {
+                "appenders": [
+                    "log",
+                    "console"
+                ],
+                "level": "WARN"
+            },
+            "error": {
+                "appenders": [
+                    "log",
+                    "console"
+                ],
+                "level": "ERROR"
+            }
+        }
     }
 }
 

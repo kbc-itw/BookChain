@@ -7,6 +7,7 @@ import { IServerConfig } from '../../app/config/IServerConfig';
 import { createUserRouter } from '../../app/router/user';
 import { chainCodeQuery } from '../../app/chaincode-connection';
 import * as sinon from 'sinon';
+import { initializeLogger } from '../../app/logger';
 
 chai.use(require('chai-http'));
 
@@ -16,7 +17,6 @@ describe('userRouter /user', () => {
     let server: Server;
 
     const { port, host } = serverConfig;
-
 
     beforeEach((done) => {
         app = express();
@@ -60,7 +60,7 @@ describe('userRouter /user', () => {
     });
 
     it('通信後chaincodeがthrowしてきた', (done) => {
-        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject({ error:true });
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject(new Error('エラーだよ'));
         const stubInvokeFunction = () => Promise.resolve();
 
         app.use(createUserRouter(stubQueryFunction, stubInvokeFunction));
@@ -117,7 +117,7 @@ describe('userRouter /user/:host/:id', () => {
     });
 
     it('通信後chaincodeがthrowしてきた', (done) => {
-        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject({ error:true });
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject(new Error('エラーだよ'));
         const stubInvokeFunction = () => Promise.resolve();
 
         app.use('/user', createUserRouter(stubQueryFunction, stubInvokeFunction));
@@ -131,7 +131,7 @@ describe('userRouter /user/:host/:id', () => {
     });
 
     it('invalidなURIパラメタでのアクセス', (done) => {
-        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject({ error:true });
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject(new Error('エラーだよ'));
         const stubInvokeFunction = () => Promise.resolve();
 
         app.use('/user', createUserRouter(stubQueryFunction, stubInvokeFunction));
