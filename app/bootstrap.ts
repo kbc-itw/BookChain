@@ -3,6 +3,7 @@ import * as express from 'express';
 import { chainCodeQuery, chainCodeInvoke } from './chaincode-connection';
 import { createUserRouter } from './router/user';
 import { logger } from './logger';
+import * as bodyParser from 'body-parser';
 /**
  * listenで起動可能なexpressアプリケーションを返す。
  * 呼び出しごとに別のアプリケーションを生成することに注意。
@@ -21,5 +22,9 @@ function configureRoute(app: express.Application) {
 }
 
 function configureUse(app: express.Application) {
+    app.use(bodyParser.urlencoded({
+        extended: true,
+    }));
+    app.use(bodyParser.json());
     // ミドルウェアをここに追加
 }
