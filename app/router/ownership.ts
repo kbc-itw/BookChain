@@ -1,14 +1,9 @@
+import { MESSAGE_ISBN_INVALID, MESSAGE_LIMIT_INVALID, MESSAGE_OFFSET_INVALID, MESSAGE_ISBN_REQUIRED, MESSAGE_OWNER_REQUIRED, MESSAGE_OWNER_INVALID } from './../messages';
 import { Router, Response, Request } from 'express';
 import { isLocator, isISBN } from '../util';
 import { logger } from '../logger';
+import { MESSAGE_OWNER_INVALID } from '../messages';
 
-
-const ownerInvalidMessage = 'ownerにはlocatorを指定します';
-const isbnInvalidMessage = 'isbnには13桁のisbnを指定します';
-const limitInvalidMessage = 'limitには0より大きい整数を指定します';
-const offsetInvalidMessage = 'offsetには0以上の整数を指定します';
-const ownerRequiredMessage = 'ownerは必須です';
-const isbnRequiredMessage = 'isbnは必須です';
 
 export function createOwnershipRouter(
     queryFunction: (request: ChaincodeQueryRequest) => Promise<any>, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
@@ -27,25 +22,25 @@ export function createOwnershipRouter(
 
         // 不正であれば400で返す
         if (owner && !isLocator(owner)) {
-            invalidRequestMessage.owner = ownerInvalidMessage;
+            invalidRequestMessage.owner = MESSAGE_OWNER_INVALID;
             invalidFlag = true;
         }  else {
             owner = owner || '';
         }
         if (isbn && !isISBN(isbn)) {
-            invalidRequestMessage.isbn = isbnInvalidMessage;
+            invalidRequestMessage.isbn = MESSAGE_ISBN_INVALID;
             invalidFlag = true;
         } else {
             isbn = isbn || '';
         }
         if (limit && (!Number.isInteger(Number(limit)) || limit <= 0)) {
-            invalidRequestMessage.limit = limitInvalidMessage;
+            invalidRequestMessage.limit = MESSAGE_LIMIT_INVALID;
             invalidFlag = true;
         } else {
             limit = limit || '';
         }
         if (offset && (!Number.isInteger(Number(offset)) || offset < 0)) {
-            invalidRequestMessage.offset = offsetInvalidMessage;
+            invalidRequestMessage.offset = MESSAGE_OFFSET_INVALID;
             invalidFlag = true;
         } else {
             offset = offset || '';
@@ -80,18 +75,18 @@ export function createOwnershipRouter(
 
         // 不正ないし存在しなければ400
         if (owner && !isLocator(owner)) {
-            invalidRequestMessage.owner = ownerInvalidMessage;
+            invalidRequestMessage.owner = MESSAGE_OWNER_INVALID;
             invalidFlag = true;
         } else if (!owner) {
-            invalidRequestMessage.owner = ownerRequiredMessage;
+            invalidRequestMessage.owner = MESSAGE_OWNER_REQUIRED;
             invalidFlag = true;
         }
 
         if (isbn && !isISBN(isbn)) {
-            invalidRequestMessage.isbn = isbnInvalidMessage;
+            invalidRequestMessage.isbn = MESSAGE_ISBN_INVALID;
             invalidFlag = true;
         } else if (!isbn) {
-            invalidRequestMessage.isbn = isbnRequiredMessage;
+            invalidRequestMessage.isbn = MESSAGE_ISBN_REQUIRED;
             invalidFlag = true;
         }
 
@@ -126,18 +121,18 @@ export function createOwnershipRouter(
 
         // 不正ないし存在しなければ400
         if (owner && !isLocator(owner)) {
-            invalidRequestMessage.owner = ownerInvalidMessage;
+            invalidRequestMessage.owner = MESSAGE_OWNER_INVALID;
             invalidFlag = true;
         } else if (!owner) {
-            invalidRequestMessage.owner = ownerRequiredMessage;
+            invalidRequestMessage.owner = MESSAGE_OWNER_REQUIRED;
             invalidFlag = true;
         }
 
         if (isbn && !isISBN(isbn)) {
-            invalidRequestMessage.isbn = isbnInvalidMessage;
+            invalidRequestMessage.isbn = MESSAGE_ISBN_INVALID;
             invalidFlag = true;
         } else if (!isbn) {
-            invalidRequestMessage.isbn = isbnRequiredMessage;
+            invalidRequestMessage.isbn = MESSAGE_ISBN_REQUIRED;
             invalidFlag = true;
         }
 
