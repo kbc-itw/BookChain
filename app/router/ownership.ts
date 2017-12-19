@@ -2,7 +2,6 @@ import { MESSAGE_ISBN_INVALID, MESSAGE_LIMIT_INVALID, MESSAGE_OFFSET_INVALID, ME
 import { Router, Response, Request } from 'express';
 import { isLocator, isISBN } from '../util';
 import { logger } from '../logger';
-import { MESSAGE_OWNER_INVALID } from '../messages';
 
 
 export function createOwnershipRouter(
