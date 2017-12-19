@@ -19,3 +19,12 @@ export function testPost(server: Server, path: string, data: Object): Promise<Ch
             .end((err, res) => resolve(res));
     });
 }
+
+export function testDelete(server: Server, path: string, data: Object): Promise<ChaiHttp.Response> {
+    return new Promise<ChaiHttp.Response>((resolve, reject) => {
+        chai.request(server)
+            .del(path)
+            .send(data)
+            .end((err, res) => resolve(res));
+    });
+}

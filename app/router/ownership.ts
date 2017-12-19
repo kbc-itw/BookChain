@@ -116,6 +116,52 @@ export function createOwnershipRouter(
 
     });
 
+    router.delete('/', async(req: Request, res: Response) => {
+        const { owner, isbn } = req.body;
+        let invalidFlag = false;
+        const invalidRequestMessage = {
+            owner: '',
+            isbn:  '',
+        };
+
+        // 不正ないし存在しなければ400
+        if (owner && !isLocator(owner)) {
+            invalidRequestMessage.owner = ownerInvalidMessage;
+            invalidFlag = true;
+        } else if (!owner) {
+            invalidRequestMessage.owner = ownerRequiredMessage;
+            invalidFlag = true;
+        }
+
+        if (isbn && !isISBN(isbn)) {
+            invalidRequestMessage.isbn = isbnInvalidMessage;
+            invalidFlag = true;
+        } else if (!isbn) {
+            invalidRequestMessage.isbn = isbnRequiredMessage;
+            invalidFlag = true;
+        }
+
+        if (invalidFlag) {
+            logger.info(`/ownershipへの不正なdelete owner:${owner} isbn:${isbn}`);
+            res.status(400).json(invalidRequestMessage);
+            return;
+        }
+
+        try {
+            const result = await invokeFunction({
+                ...invokeBase,
+                fcn: 'deleteOwnerShip',
+                args: [owner, isbn],
+
+            });
+            res.status(200).end();
+        } catch (e) {
+            logger.info(`chaincodeエラー ${e}`);
+            res.status(500).json({ error: true });
+        }
+
+    });
+
     logger.trace('createOwnershipRouter完了');
     return router;
 }
