@@ -6,9 +6,11 @@ export enum ErrorMessages {
     MESSAGE_LIMIT_INVALID = 'limitには0より大きい整数を指定します',
     MESSAGE_OFFSET_INVALID = 'offsetには0以上の整数を指定します',
     MESSAGE_HOST_INVALID = 'ホスト名にはFQDNないしlocalhostを指定します',
+    MESSAGE_UUID_INVALID = 'UUIDには32桁ハイフンなしのUUIDを指定します',
     MESSAGE_LOCAL_ID_INVALID = 'ローカルIDにはIDを指定します',
     MESSAGE_OWNER_REQUIRED = 'ownerは必須です',
     MESSAGE_ISBN_REQUIRED = 'isbnは必須です',
     MESSAGE_HOST_REQUIRED = 'ホスト名は必須です',
     MESSAGE_LOCAL_ID_REQUIRED = 'ローカルIDは必須です',
+    MESSAGE_UUID_REQUIRED = 'UUIDは必須です',
 }
