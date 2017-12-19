@@ -1,9 +1,9 @@
-import { MESSAGE_HOST_INVALID, MESSAGE_HOST_REQUIRED, MESSAGE_LOCAL_ID_INVALID, MESSAGE_LOCAL_ID_REQUIRED } from './../messages';
 import { Router } from 'express';
 import { Request, Response } from 'express-serve-static-core';
 import { chainCodeQuery } from '../chaincode-connection';
 import { isLocalID, isFQDN } from '../util';
 import { logger } from '../logger';
+import { ErrorMessages } from '../messages';
 
 export function createUserRouter(
     queryFunction: (request: ChaincodeQueryRequest) => Promise<any>, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
@@ -32,12 +32,12 @@ export function createUserRouter(
         };
 
         if (host && !isFQDN(host)) {
-            invalidRequestMessage.host = MESSAGE_HOST_INVALID;
+            invalidRequestMessage.host = ErrorMessages.MESSAGE_HOST_INVALID;
             invalidFlag = true;
         }
 
         if (id && !isLocalID(id)) {
-            invalidRequestMessage.id = MESSAGE_LOCAL_ID_INVALID;
+            invalidRequestMessage.id = ErrorMessages.MESSAGE_LOCAL_ID_INVALID;
             invalidFlag = true;
         }
 
