@@ -7,7 +7,13 @@ export function testGet(server: Server, path: string): Promise<ChaiHttp.Response
     return new Promise<ChaiHttp.Response>((resolve, reject) => {
         chai.request(server)
             .get(path)
-            .end((err, res) => resolve(res));
+            .end((err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
     });
 }
 
@@ -16,7 +22,13 @@ export function testPost(server: Server, path: string, data: Object): Promise<Ch
         chai.request(server)
             .post(path)
             .send(data)
-            .end((err, res) => resolve(res));
+            .end((err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
     });
 }
 
@@ -25,6 +37,12 @@ export function testDelete(server: Server, path: string, data: Object): Promise<
         chai.request(server)
             .del(path)
             .send(data)
-            .end((err, res) => resolve(res));
+            .end((err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
     });
 }
