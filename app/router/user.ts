@@ -26,30 +26,30 @@ export function createUserRouter(
     userRouter.get('/:host/:id', async (req, res) => {
         const { host, id } = req.params;
         let invalidFlag = false;
-        const invalidField = {
+        const invalidRequestMessage = {
             host: '',
             id: '',
         };
 
         if (host && !isFQDN(host)) {
-            invalidField.host = MESSAGE_HOST_INVALID;
+            invalidRequestMessage.host = MESSAGE_HOST_INVALID;
             invalidFlag = true;
         } else if (host === '') {
-            invalidField.host = MESSAGE_HOST_REQUIRED;
+            invalidRequestMessage.host = MESSAGE_HOST_REQUIRED;
             invalidFlag = true;
         }
 
         if (id && !isLocalID(id)) {
-            invalidField.id = MESSAGE_LOCAL_ID_INVALID;
+            invalidRequestMessage.id = MESSAGE_LOCAL_ID_INVALID;
             invalidFlag = true;
         } else if (id === '') {
-            invalidField.id = MESSAGE_LOCAL_ID_REQUIRED;
+            invalidRequestMessage.id = MESSAGE_LOCAL_ID_REQUIRED;
             invalidFlag = true;
         }
 
         if (invalidFlag) {
             logger.info('/:host/:idへの不正なリクエスト host:${host} id:${id}');
-            res.status(400).json(invalidField);
+            res.status(400).json(invalidRequestMessage);
             return;
         }
         try {
