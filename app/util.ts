@@ -6,6 +6,7 @@ export type DisplayName = '1文字以上50文字以内の任意の文字列';
 export type Locator = '(UserID)@(FQDN)';
 export type ISBN = '13桁のISBN';
 export type BooleanString = 'trueまたはfalse';
+export type UUID = 'ハイフンが必要';
 
 const isDomainName = require('is-domain-name');
 
@@ -40,4 +41,8 @@ export function isISBN(isbn: string): isbn is ISBN {
 
 export function isBooleanString(bool: string): bool is BooleanString {
     return bool === 'true' || bool === 'false'; 
+}
+
+export function isUUID(uuid: string): uuid is UUID {
+    return /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(uuid);
 }
