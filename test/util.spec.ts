@@ -1,6 +1,6 @@
 import * as chai from'chai';
 import 'mocha';
-import { isFQDN, isLocalID, isDisplayName, isLocator, isISBN } from '../app/util';
+import { isFQDN, isLocalID, isDisplayName, isLocator, isISBN, isRoomPurpose } from '../app/util';
 
 describe('isFQDN', () => {
 
@@ -105,5 +105,21 @@ describe('isISBN', () => {
 
     it('そもそもISBNでない文字列は通さない', () => {
         chai.expect(isISBN('hogehgoe')).to.equal(false);
+    });
+});
+
+describe('isRoomPurpose', () => {
+    it('rentalかreturn', () => {
+        chai.expect(isRoomPurpose('rental')).to.be.true;
+        chai.expect(isRoomPurpose('return')).to.be.true;
+    });
+
+    it('大文字は通さない', () => {
+        chai.expect(isRoomPurpose('RENTAL')).to.be.false;
+        chai.expect(isRoomPurpose('RETURN')).to.be.false;
+    });
+
+    it('rentalでもreturnでもないものは通さない', () => {
+        chai.expect(isISBN('hogehgoe')).to.be.false;
     });
 });

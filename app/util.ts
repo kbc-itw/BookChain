@@ -5,7 +5,7 @@ export type LocalID = '英数字とアンダーバーのみ利用可、4文字�
 export type DisplayName = '1文字以上50文字以内の任意の文字列';
 export type Locator = '(UserID)@(FQDN)';
 export type ISBN = '13桁のISBN';
-
+export type RoomPurpose = 'rentalまたはreturn';
 
 const isDomainName = require('is-domain-name');
 
@@ -36,4 +36,8 @@ export function isISBN(isbn: string): isbn is ISBN {
         return parsed.isIsbn13();
     }
     return false;
+}
+
+export function isRoomPurpose(purpose: string): purpose is RoomPurpose {
+    return purpose === 'rental' || purpose === 'return';
 }
