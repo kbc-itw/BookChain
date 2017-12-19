@@ -4,7 +4,6 @@ import * as express from 'express';
 import { Server } from 'http';
 import * as config from 'config';
 import { IServerConfig } from '../../app/config/IServerConfig';
-import { createUserRouter } from '../../app/router/user';
 import { chainCodeQuery } from '../../app/chaincode-connection';
 import * as sinon from 'sinon';
 import { createOwnershipRouter } from '../../app/router/ownership';
@@ -83,19 +82,65 @@ describe('tradingRouter /tradings get', () => {
         await chai.expect(testGet(server, '/tradings?owner=foobarfoobarfoob@kbc-itw.net&isbn=1234567890123&limit=hoge')).to.be.rejectedWith('Bad Request');
         await chai.expect(testGet(server, '/tradings?borrower=tarotarotarotaro@stu.kawahara.ac.jp&isbn=1234567890123&offset=hoge')).to.be.rejectedWith('Bad Request');
         await chai.expect(testGet(server, '/tradings?owner=foobarfoobarfoob@kbc-itw.net&borrower=tarotarotarotaro@stu.kawahara.ac.jp&limit=hoge&offset=hoge')).to.be.rejectedWith('Bad Request');
-        await chai.expect(testGet(server, '/tradings?isreturned=true&limit=hoge&offset=hoge')).to.be.rejectedWith('Bad Request');
-        await chai.expect(testGet(server, '/tradings?owner=foobarfoobarfoob@kbc-itw.net&isbn=1234567890123&isreturned=true&offset=hoge')).to.be.rejectedWith('Bad Request');
-        await chai.expect(testGet(server, '/tradings?borrower=tarotarotarotaro@stu.kawahara.ac.jp&isbn=1234567890123&isreturned=true&limit=hoge')).to.be.rejectedWith('Bad Request');
-        await chai.expect(testGet(server, '/tradings?owner=foobarfoobarfoob@kbc-itw.net&borrower=tarotarotarotaro@stu.kawahara.ac.jp&isreturned=true')).to.be.rejectedWith('Bad Request');
+        await chai.expect(testGet(server, '/tradings?isreturned=hoge&limit=hoge&offset=hoge')).to.be.rejectedWith('Bad Request');
+        await chai.expect(testGet(server, '/tradings?owner=foobarfoobarfoob@kbc-itw.net&isbn=1234567890123&isreturned=hoge&offset=hoge')).to.be.rejectedWith('Bad Request');
+        await chai.expect(testGet(server, '/tradings?borrower=tarotarotarotaro@stu.kawahara.ac.jp&isbn=1234567890123&isreturned=hoge&limit=hoge')).to.be.rejectedWith('Bad Request');
+        await chai.expect(testGet(server, '/tradings?owner=foobarfoobarfoob@kbc-itw.net&borrower=tarotarotarotaro@stu.kawahara.ac.jp&isreturned=hoge')).to.be.rejectedWith('Bad Request');
     });
 
     it('通信後chaincodeがthrowしてきた', async () => {
         const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject(new Error('エラーだよ'));
         const stubInvokeFunction = (request: ChaincodeInvokeRequest) => Promise.reject(new Error('エラーだよ'));
 
-        app.use('/tradings', createOwnershipRouter(stubQueryFunction, stubInvokeFunction));
+        app.use('/tradings', createTradingsRouter(stubQueryFunction, stubInvokeFunction));
 
         await chai.expect(testGet(server, '/tradings')).to.be.rejectedWith('Internal Server Error');
     });
+    it('正常系', async () => {
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.resolve({
+            id: 'b6e59e77-b989-4b09-a99b-40865035c83d',
+            owner: 'huruikagi@kbc-itw.net',
+            borrower: 'taro@stu.kawahara.ac.jp',
+            isbn: '9784873114675',
+            lendAt: '2017-11-21T04:37:11.247Z',
+        });
+
+        const stubInvokeFunction = ()  => Promise.resolve();
+
+        app.use('/tradings', createTradingsRouter(stubQueryFunction, stubInvokeFunction));
+
+        try {
+            const result = await testGet(server, '/tradings/b6e59e77-b989-4b09-a99b-40865035c83d');
+            chai.expect(result.status).to.be.equal(200);
+            chai.expect(result.body).to.deep.equal({
+                id: 'b6e59e77-b989-4b09-a99b-40865035c83d',
+                owner: 'huruikagi@kbc-itw.net',
+                borrower: 'taro@stu.kawahara.ac.jp',
+                isbn: '9784873114675',
+                lendAt: '2017-11-21T04:37:11.247Z',
+            });
+        } catch (e) {
+            chai.assert.fail();
+        }
+    });
+
+    it('不正なURIパラメタ', async () => {
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject(new Error('エラーだよ'));
+        const stubInvokeFunction = () => Promise.reject(new Error('エラーだよ'));
+
+        app.use('/tradings', createTradingsRouter(stubQueryFunction, stubInvokeFunction));
+        
+        await chai.expect(testGet(server, '/tradings/foobarfoobarfoo')).to.be.rejectedWith('Bad Request');
+    });
+
+    it('通信後chaincodeがthrowしてきた', async () => {
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject(new Error('エラーだよ'));
+        const stubInvokeFunction = () => Promise.resolve();
+
+        app.use('/tradings', createTradingsRouter(stubQueryFunction, stubInvokeFunction));
+
+        await chai.expect(testGet(server, '/tradings/b6e59e77-b989-4b09-a99b-40865035c83d')).to.be.rejectedWith('Internal Server Error');
+    });
+
 
 });
