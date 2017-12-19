@@ -6,7 +6,7 @@ import { isLocalID, isFQDN } from '../util';
 import { logger } from '../logger';
 
 export function createUserRouter(
-    queryFunction: (request: ChaincodeQueryRequest) => Promise<any>, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>
+    queryFunction: (request: ChaincodeQueryRequest) => Promise<any>, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
 ): Router {
     const userRouter = Router();
     userRouter.get('/', async (req: Request, res: Response) => {
