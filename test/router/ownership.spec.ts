@@ -8,12 +8,12 @@ import { createUserRouter } from '../../app/router/user';
 import { chainCodeQuery } from '../../app/chaincode-connection';
 import * as sinon from 'sinon';
 import { createOwnershipRouter } from '../../app/router/ownership';
-import { testGet } from '../http-testing-function';
+import { testGet, testPost } from '../http-testing-function';
 import { logger } from '../../app/logger';
-
+import * as bodyParser from 'body-parser';
 chai.use(require('chai-http'));
 
-describe('ownershipRouter /ownership', () => {
+describe('ownershipRouter /ownership get', () => {
     const serverConfig = config.get<IServerConfig>('server');
     let app: express.Express;
     let server: Server;
@@ -60,10 +60,7 @@ describe('ownershipRouter /ownership', () => {
                 }]);
             }
             done();
-        }).catch((e) => { 
-            chai.expect.fail();
-            done();
-        });
+        }).catch(err => done());
     });
 
     it('不正データ投げつけ', (done) => {
@@ -92,7 +89,7 @@ describe('ownershipRouter /ownership', () => {
                 chai.expect(result.status).to.be.equal(400);
             }
             done();
-        });
+        }).catch(err => done());
     });
 
     it('通信後chaincodeがthrowしてきた', (done) => {
@@ -106,7 +103,82 @@ describe('ownershipRouter /ownership', () => {
                 chai.expect(result.status).to.be.equal(500);
                 chai.expect(result.body).to.deep.equal({ error: true });
                 done();
-            });
+            }).catch(err => done());
+    });
+});
+
+describe('ownershipRouter /ownership post', () => {
+    const serverConfig = config.get<IServerConfig>('server');
+    let app: express.Express;
+    let server: Server;
+
+    const { port, host } = serverConfig;
+
+    beforeEach((done) => {
+        app = express();
+        app.use(bodyParser.urlencoded({
+            extended: true,
+        }));
+        app.use(bodyParser.json());
+        server = app.listen(port, host, () => done());
+    });
+
+    afterEach((done) => {
+        server.close(() => done());
+    });
+
+    it('正常系', (done) => {
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.resolve();
+        const stubInvokeFunction = ()  => Promise.resolve();
+        const data = {
+            owner: 'huruikagi@kbc-itw.net',
+            isbn : '9784873114675',
+        };
+
+        app.use('/ownership', createOwnershipRouter(stubQueryFunction, stubInvokeFunction));
+
+        testPost(server, '/ownership', data)
+            .then((result) => {
+                chai.expect(result.status).to.be.equal(201);
+                done();
+            }).catch(err => done());
+    });
+
+    it('不正データ', (done) => {
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.resolve();
+        const stubInvokeFunction = ()  => Promise.resolve();
+
+        app.use('/ownership', createOwnershipRouter(stubQueryFunction, stubInvokeFunction));
+
+        Promise.all([
+            testPost(server, '/ownership', {}),
+            testPost(server, '/ownership', { owner: 'foobarfoobarfoob@kbc-itw.net' }),
+            testPost(server, '/ownership', { owner: '' }),
+            testPost(server, '/ownership', { owner: 'foobarfoobarfoob@kbc-itw.net', isbn: '3334873114675' }),
+            testPost(server, '/ownership', { owner: 'foobarfoobarfoob@kbc-itw.net', isbn: '' }),
+            testPost(server, '/ownership', { owner: '', isbn: '3334873114675' }),
+            testPost(server, '/ownership', { owner: '', isbn: '' }),
+        ]).then((results) => {
+            for (const result of results) {
+                chai.expect(result.status).to.be.equal(400);
+            }
+            done();
+        }).catch(err => done());
+    });
+
+    it('通信後chaincodeがthrowしてきた', (done) => {
+        const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject(new Error('エラーだよ'));
+        const stubInvokeFunction = () => Promise.resolve();
+        const data = {};
+
+        app.use('/ownership', createOwnershipRouter(stubQueryFunction, stubInvokeFunction));
+
+        testPost(server, '/ownership', data)
+            .then((result) => {
+                chai.expect(result.status).to.be.equal(500);
+                chai.expect(result.body).to.deep.equal({ error: true });
+                done();
+            }).catch(err => done());
     });
 });
 

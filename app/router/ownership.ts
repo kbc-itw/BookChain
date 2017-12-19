@@ -52,7 +52,7 @@ export function createOwnershipRouter(
         }
         
         if (invalidFlag) {
-            logger.info(`ownershipへの不正なリクエスト ${invalidRequestMessage}`);
+            logger.info(`ownershipへの不正なget ${invalidRequestMessage}`);
             res.status(400).json(invalidRequestMessage);
             return;
         }
@@ -60,7 +60,7 @@ export function createOwnershipRouter(
         try {
             const result = await queryFunction({
                 ...queryBase,
-                fcn: 'getOwnerShipList',
+                fcn: 'getOwnerShipList  ',
                 args:[owner, isbn, limit, offset],
             });
             res.status(200).json({ result });
@@ -69,6 +69,53 @@ export function createOwnershipRouter(
             res.status(500).json({ error: true });
         }
     });
+
+    router.post('/', async(req: Request, res: Response) => {
+        const { owner, isbn } = req.body;
+        let invalidFlag = false;
+        const invalidRequestMessage = {
+            owner: '',
+            isbn:  '',
+        };
+
+        // 不正ないし存在しなければ400
+        if (owner && !isLocator(owner)) {
+            invalidRequestMessage.owner = ownerInvalidMessage;
+            invalidFlag = true;
+        } else if (!owner) {
+            invalidRequestMessage.owner = ownerRequiredMessage;
+            invalidFlag = true;
+        }
+
+        if (isbn && !isISBN(isbn)) {
+            invalidRequestMessage.isbn = isbnInvalidMessage;
+            invalidFlag = true;
+        } else if (!isbn) {
+            invalidRequestMessage.isbn = isbnRequiredMessage;
+            invalidFlag = true;
+        }
+
+        if (invalidFlag) {
+            logger.info(`/ownershipへの不正なpost owner:${owner} isbn:${isbn}`);
+            res.status(400).json(invalidRequestMessage);
+            return;
+        }
+
+        try {
+            const result = await invokeFunction({
+                ...invokeBase,
+                fcn: 'createOwnerShip',
+                args: [owner, isbn, new Date().toISOString()],
+
+            });
+            res.status(201).end();
+        } catch (e) {
+            logger.info(`chaincodeエラー ${e}`);
+            res.status(500).json({ error: true });
+        }
+
+    });
+
     logger.trace('createOwnershipRouter完了');
     return router;
 }
@@ -78,5 +125,12 @@ const queryBase = {
     // TODO transactionIDは不要であるはずだ
     txId: {
         getTransactionID(): string {throw new Error('呼ばれないはずだ'); return 'hoge';},
+    },
+};
+
+const invokeBase = {
+    chaincodeId: 'ownership',
+    txId: {
+        getTransactionID(): string {throw new Error('呼ばれないはずだ'); return 'hoge'; },
     },
 };
