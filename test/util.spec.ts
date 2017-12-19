@@ -1,6 +1,6 @@
 import * as chai from'chai';
 import 'mocha';
-import { isFQDN, isLocalID, isDisplayName, isLocator, isISBN } from '../app/util';
+import { isFQDN, isLocalID, isDisplayName, isLocator, isISBN, isBooleanString } from '../app/util';
 
 describe('isFQDN', () => {
 
@@ -107,3 +107,20 @@ describe('isISBN', () => {
         chai.expect(isISBN('hogehgoe')).to.equal(false);
     });
 });
+
+describe('isBooleanString', () => {
+    it('trueおよびfalse', () => {
+        chai.expect(isBooleanString('true')).to.equal(true);
+        chai.expect(isBooleanString('false')).to.equal(true);
+    });
+
+    it('大文字は通さない', () => {
+        chai.expect(isBooleanString('TRUE')).to.equal(false);
+        chai.expect(isBooleanString('FALSE')).to.equal(false);
+    });
+
+    it('そもそもtrueとかfalseでない文字列は通さない', () => {
+        chai.expect(isBooleanString('foo')).to.be.false;
+    });
+});
+
