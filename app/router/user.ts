@@ -34,16 +34,10 @@ export function createUserRouter(
         if (host && !isFQDN(host)) {
             invalidRequestMessage.host = MESSAGE_HOST_INVALID;
             invalidFlag = true;
-        } else if (host === '') {
-            invalidRequestMessage.host = MESSAGE_HOST_REQUIRED;
-            invalidFlag = true;
         }
 
         if (id && !isLocalID(id)) {
             invalidRequestMessage.id = MESSAGE_LOCAL_ID_INVALID;
-            invalidFlag = true;
-        } else if (id === '') {
-            invalidRequestMessage.id = MESSAGE_LOCAL_ID_REQUIRED;
             invalidFlag = true;
         }
 
