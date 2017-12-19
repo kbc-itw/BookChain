@@ -44,7 +44,7 @@ export function createUserRouter(
         }
     });
 
-    logger.trace('bootstrap完了');
+    logger.trace('createUserRouter完了');
     return userRouter;
 }
 
