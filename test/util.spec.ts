@@ -89,7 +89,6 @@ describe('isLocator', () => {
 
 describe('isISBN', () => {
     it('一般的なISBN', () => {
-        chai.expect(isISBN('978-4-06-263914-9')).to.be.true;
         chai.expect(isISBN('9784062639149')).to.be.true;
     });
 
@@ -97,6 +96,10 @@ describe('isISBN', () => {
         chai.expect(isISBN('4062194074')).to.be.false;
         chai.expect(isISBN('4-062194-07-4')).to.be.false;
         
+    });
+
+    it('ハイフンを許容しない', () => {
+        chai.expect(isISBN('978-4-06-263914-9')).to.be.false;
     });
 
     it('13桁でもISBNでない数字は通さない', () => {
