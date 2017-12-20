@@ -56,7 +56,15 @@
                     "console"
                 ],
                 "level": "ERROR"
+            },
+            "fatal": {
+                "appenders": [
+                    "log",
+                    "console"
+                ],
+                "level": "FATAL"
             }
+
         }
     }
 }
