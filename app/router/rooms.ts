@@ -53,7 +53,7 @@ export function createRoomsRouter(
             });
             res.status(201).json(result);
         } catch (e) {
-            logger.info(`chaincodeエラー ${e}`);
+            logger.error(`chaincodeエラー ${e}`);
             res.status(500).json({ error: true });
         }
 
