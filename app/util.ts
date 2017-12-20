@@ -4,6 +4,7 @@ export type FQDN = 'FQDN　特別にlocalhostも可';
 export type LocalID = '英数字とアンダーバーのみ利用可、4文字以上15文字以下';
 export type DisplayName = '1文字以上50文字以内の任意の文字列';
 export type Locator = '(UserID)@(FQDN)';
+export type RoomPurpose = 'rentalまたはreturn';
 export type ISBN = '13桁のISBN（ハイフンなし）';
 export type BooleanString = 'trueまたはfalse';
 export type UUID = 'ハイフンが必要';
@@ -42,7 +43,10 @@ export function isISBN(isbn: string): isbn is ISBN {
     return false;
 }
 
-export function isBooleanString(bool: string): bool is BooleanString {
+export function isRoomPurpose(purpose: string): purpose is RoomPurpose {
+    return purpose === 'rental' || purpose === 'return';
+
+  export function isBooleanString(bool: string): bool is BooleanString {
     return bool === 'true' || bool === 'false'; 
 }
 

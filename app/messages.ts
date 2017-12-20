@@ -8,9 +8,13 @@ export enum ErrorMessages {
     MESSAGE_HOST_INVALID = 'ホスト名にはFQDNないしlocalhostを指定します',
     MESSAGE_UUID_INVALID = 'UUIDには32桁ハイフンありのUUIDを指定します',
     MESSAGE_LOCAL_ID_INVALID = 'ローカルIDにはIDを指定します',
+    MESSAGE_ROOM_PURPOSE_INVALID = 'purposeにはrentalかreturnを指定します',
+    MESSAGE_INVITER_INVALID = 'inviterにはlocatorを指定します',
     MESSAGE_OWNER_REQUIRED = 'ownerは必須です',
     MESSAGE_ISBN_REQUIRED = 'isbnは必須です',
     MESSAGE_HOST_REQUIRED = 'ホスト名は必須です',
     MESSAGE_LOCAL_ID_REQUIRED = 'ローカルIDは必須です',
+    MESSAGE_ROOM_PURPOSE_REQUIRED = 'purposeは必須です',
+    MESSAGE_INVITER_REQUIRED = 'inviterは必須です',
     MESSAGE_UUID_REQUIRED = 'UUIDは必須です',
 }
