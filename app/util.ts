@@ -45,8 +45,9 @@ export function isISBN(isbn: string): isbn is ISBN {
 
 export function isRoomPurpose(purpose: string): purpose is RoomPurpose {
     return purpose === 'rental' || purpose === 'return';
+}
 
-  export function isBooleanString(bool: string): bool is BooleanString {
+export function isBooleanString(bool: string): bool is BooleanString {
     return bool === 'true' || bool === 'false'; 
 }
 
