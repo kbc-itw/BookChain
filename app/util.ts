@@ -7,6 +7,7 @@ export type Locator = '(UserID)@(FQDN)';
 export type RoomPurpose = 'rentalまたはreturn';
 export type ISBN = '13桁のISBN（ハイフンなし）';
 export type BooleanString = 'trueまたはfalse';
+export type RoleString = 'inviterまたはguest'; 
 export type UUID = 'ハイフンが必要';
 
 const isDomainName = require('is-domain-name');
@@ -53,4 +54,8 @@ export function isBooleanString(bool: string): bool is BooleanString {
 
 export function isUUID(uuid: string): uuid is UUID {
     return /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(uuid);
+}
+
+export function isRoleString(role: string): role is RoleString {
+    return role === 'inviter' || role === 'guest';
 }

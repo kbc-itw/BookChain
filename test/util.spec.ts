@@ -1,6 +1,6 @@
 import * as chai from'chai';
 import 'mocha';
-import { isFQDN, isLocalID, isDisplayName, isLocator, isISBN, isRoomPurpose, isBooleanString, isUUID } from '../app/util';
+import { isFQDN, isLocalID, isDisplayName, isLocator, isISBN, isRoomPurpose, isBooleanString, isUUID, isRoleString } from '../app/util';
 
 describe('isFQDN', () => {
 
@@ -157,3 +157,18 @@ describe('isUUID', () => {
     });
 });
 
+describe('isRoleString', () => {
+    it('inviterまたはguest', () => {
+        chai.expect(isRoleString('inviter')).to.be.true;
+        chai.expect(isRoleString('guest')).to.be.true;
+    });
+    
+    it('大文字は通さない', () => {
+        chai.expect(isRoleString('INVITER')).to.be.false;
+        chai.expect(isRoleString('GUEST')).to.be.false;
+    });
+
+    it('inviterでもroleでもない文字列は通さない', () => {
+        chai.expect(isRoleString('hoge')).to.be.false;
+    });
+});
