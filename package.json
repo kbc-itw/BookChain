@@ -30,7 +30,8 @@
     "isbn-utils": "^1.1.0",
     "log4js": "^2.4.1",
     "source-map-support": "^0.5.0",
-    "uuid": "^3.1.0"
+    "uuid": "^3.1.0",
+    "ws": "^3.3.3"
   },
   "devDependencies": {
     "@types/app-root-path": "^1.2.4",
@@ -43,6 +44,7 @@
     "@types/mocha": "^2.2.44",
     "@types/sinon": "^4.1.2",
     "@types/source-map-support": "^0.4.0",
+    "@types/ws": "^3.2.1",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-http": "^3.0.0",
