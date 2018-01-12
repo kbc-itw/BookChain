@@ -3,16 +3,20 @@ import * as ws from 'ws';
 
 export const roomPool = new Map<UUID, SocketRoom>();
 
-interface SocketRoom {
+export interface SocketRoom {
     room: {
         readonly id: UUID;
         readonly host: FQDN;
         readonly purpose: RoomPurpose;
         readonly inviter: Locator;
-        readonly guest: Locator | undefined;
+        guest: Locator | undefined;
         readonly createdAt: Date;
-        readonly closedAt: Date | undefined;
+        closedAt: Date | undefined;
     };
+    isbn: string;
+    inviterApproved: boolean;
+    guestApproved: boolean;
+    inviteToken: UUID;
     inviterSocket : ws | undefined;
     guestSocket: ws | undefined;
 }
