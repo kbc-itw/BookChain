@@ -21,4 +21,7 @@ export enum ErrorMessages {
     MESSAGE_UUID_REQUIRED = 'UUIDは必須です',
     MESSAGE_ROLE_REQUIRED = 'roleは必須です',
     MESSAGE_LOCATOR_REQUIRED = 'locatorは必須です',
+    MESSAGE_INVITETOKEN_REQUIRED = 'roleがguestの場合、inviteTokenは必須です',
+    MESSAGE_ROOM_DOESNT_EXIST = '指定されたIDの部屋は存在しません',
+    
 }
