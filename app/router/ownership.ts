@@ -2,6 +2,7 @@ import { Router, Response, Request } from 'express';
 import { isLocator, isISBN } from '../util';
 import { logger } from '../logger';
 import { ErrorMessages } from '../messages';
+import { isAuthenticated } from '../authenticator';
 
 
 export function createOwnershipRouter(
@@ -9,7 +10,7 @@ export function createOwnershipRouter(
 ): Router {
     const router = Router();
 
-    router.get('/', async (req: Request, res: Response) => {
+    router.get('/', isAuthenticated, async (req: Request, res: Response) => {
         let { owner, isbn, limit, offset } = req.query;
         let invalidFlag = false;
         const invalidRequestMessage = {
@@ -64,7 +65,7 @@ export function createOwnershipRouter(
         }
     });
 
-    router.post('/', async(req: Request, res: Response) => {
+    router.post('/', isAuthenticated, async(req: Request, res: Response) => {
         const { owner, isbn } = req.body;
         let invalidFlag = false;
         const invalidRequestMessage = {
