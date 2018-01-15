@@ -8,7 +8,13 @@ import { IServerConfig } from '../../app/config/IServerConfig';
 import { createUserRouter } from '../../app/router/user';
 import { chainCodeQuery } from '../../app/chaincode-connection';
 import * as sinon from 'sinon';
-import { testGet } from '../http-testing-function';
+import { testGet, testPost } from '../http-testing-function';
+import * as bodyParser from 'body-parser';
+import { passport } from '../../app/authenticator';
+import { configureUse } from '../../app/bootstrap';
+import { createAuthenticationRouter } from '../../app/router/authenticate';
+
+const session = require('express-session');
 
 chai.use(require('chai-as-promised'));
 
@@ -21,6 +27,7 @@ describe('userRouter /user get', () => {
 
     beforeEach(async () => {
         app = express();
+        configureUse(app);
         server = await app.listen(port, host);
     });
     afterEach(async () => {
@@ -55,6 +62,7 @@ describe('userRouter /user get', () => {
                 name: 'huruikagi',
             });
         } catch (e) {
+            console.log(e);
             chai.assert.fail();
         }
     });
