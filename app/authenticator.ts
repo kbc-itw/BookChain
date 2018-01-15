@@ -2,6 +2,8 @@ import { Passport } from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as FaceBookStrategy } from 'passport-facebook';
 import * as config from 'config';
+import { NextFunction } from 'express';
+import { Request, Response } from 'express-serve-static-core';
 
 export const passport = new Passport();
 const domain = config.get<string>('domain');
@@ -37,3 +39,11 @@ passport.deserializeUser((user, done) => {
 
 passport.use(localStrategy);
 passport.use(facebookStrategy);
+
+export function isAuthenticated(req:Request, res:Response, next:NextFunction): void {
+    if (process.env.NODE_ENV !== 'deployment' || req.isAuthenticated()) {
+        next();
+    } else {
+        res.redirect('/auth/facebook/');
+    }
+}
