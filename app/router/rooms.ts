@@ -5,6 +5,7 @@ import { ErrorMessages } from '../messages';
 import { IServerConfig } from '../config/IServerConfig';
 import * as config from 'config';
 import { isAuthenticated } from '../authenticator';
+import { roomPool } from '../roomPool';
 
 const uuidv4 = require('uuid/v4');
 
@@ -52,6 +53,8 @@ export function createRoomsRouter(
                 args: [uuidv4(), purpose, inviter, serverConfig.host, new Date().toISOString()],
 
             });
+            result.inviteToken = uuidv4();
+            roomPool.set(result.id, result);
             res.status(201).json(result);
         } catch (e) {
             logger.error(`chaincodeエラー ${e}`);
