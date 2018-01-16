@@ -11,6 +11,7 @@ import * as sinon from 'sinon';
 import { testPost } from '../http-testing-function';
 import * as bodyParser from 'body-parser';
 import { createRoomsRouter } from '../../app/router/rooms';
+import { configureUse } from '../../app/bootstrap';
 chai.use(require('chai-as-promised'));
 
 describe('roomsRouter /rooms post', () => {
@@ -22,10 +23,7 @@ describe('roomsRouter /rooms post', () => {
 
     beforeEach(async () => {
         app = express();
-        app.use(bodyParser.urlencoded({
-            extended: true,
-        }));
-        app.use(bodyParser.json());
+        configureUse(app);
         server = await app.listen(port, host);
     });
 

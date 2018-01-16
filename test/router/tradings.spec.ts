@@ -11,6 +11,7 @@ import { testGet, testPost, testDelete } from '../http-testing-function';
 import { logger } from '../../app/logger';
 import * as bodyParser from 'body-parser';
 import { createTradingsRouter } from '../../app/router/tradings';
+import { configureUse } from '../../app/bootstrap';
 chai.use(require('chai-http'));
 chai.use(require('chai-as-promised'));
 
@@ -23,6 +24,7 @@ describe('tradingRouter /tradings get', () => {
 
     beforeEach(async () => {
         app = express();
+        configureUse(app);
         server = await app.listen(port, host);
     });
 

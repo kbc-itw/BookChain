@@ -4,6 +4,7 @@ import { logger } from '../logger';
 import { ErrorMessages } from '../messages';
 import { IServerConfig } from '../config/IServerConfig';
 import * as config from 'config';
+import { isAuthenticated } from '../authenticator';
 import { roomPool } from '../roomPool';
 
 const uuidv4 = require('uuid/v4');
@@ -13,7 +14,7 @@ export function createRoomsRouter(
 ): Router {
     const router = Router();
 
-    router.post('/', async(req: Request, res: Response) => {
+    router.post('/', isAuthenticated, async(req: Request, res: Response) => {
         const { purpose, inviter } = req.body;
         const serverConfig = config.get<IServerConfig>('server');
         let invalidFlag = false;

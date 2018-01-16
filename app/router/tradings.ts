@@ -2,6 +2,7 @@ import { Router, Response, Request } from 'express';
 import { isLocator, isISBN, isBooleanString, isUUID } from '../util';
 import { logger } from '../logger';
 import { ErrorMessages } from '../messages';
+import { isAuthenticated } from '../authenticator';
 
 
 
@@ -11,7 +12,7 @@ export function createTradingsRouter(
 
     const router = Router();
 
-    router.get('/', async (req: Request, res: Response) => {
+    router.get('/', isAuthenticated, async (req: Request, res: Response) => {
         let { owner, borrower, isbn, isreturned, limit, offset } = req.query;
         let invalidFlag = false;
         const invalidRequestMessage = {
@@ -84,7 +85,7 @@ export function createTradingsRouter(
         }
     });
 
-    router.get('/:uuid', async (req: Request, res: Response) => {
+    router.get('/:uuid', isAuthenticated, async (req: Request, res: Response) => {
         const { uuid } = req.params;
         let invalidFlag = false;
         const invalidRequestMessage = {
