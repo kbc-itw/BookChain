@@ -4,7 +4,7 @@ import ws = require('ws');
 import { Server, IncomingMessage } from 'http';
 import * as url from 'url';
 import { logger } from './logger';
-import { isUUID, isRoleString, isLocator, isISBN, isRoomPurpose, UUID, FQDN, RoomPurpose, Locator } from './util';
+import { isUUID, isRoleString, isLocator, isISBN, isRoomPurpose, UUID, FQDN, RoomPurpose, Locator, RoleString } from './util';
 import { ErrorMessages } from './messages';
 import { ISBN } from 'isbn-utils';
 
@@ -28,49 +28,11 @@ export function createWebSocketServer(
     
         const parsedURL = url.parse(req.url);
         const { roomID, locator, role, inviteToken } = parsedURL.query;
+        
+        const invalidField = validate({ roomID, locator, role, inviteToken });
+
     
-        const invalidField = {
-            id: '',
-            locator: '',
-            role: '',
-            inviteToken: '',
-        };
-    
-        let invalidFlag = false;
-    
-        if (roomID && !isUUID(roomID)) {
-            invalidField.id = ErrorMessages.MESSAGE_UUID_INVALID;
-            invalidFlag = true;
-        } else if (!roomID) {
-            invalidField.id = ErrorMessages.MESSAGE_UUID_REQUIRED;
-            invalidFlag = true;
-        }
-    
-        if (locator && isLocator(locator)) {
-            invalidField.locator = ErrorMessages.MESSAGE_LOCATOR_INVALID;
-            invalidFlag = true;
-        } else if (!locator) {
-            invalidField.locator = ErrorMessages.MESSAGE_LOCATOR_REQUIRED;
-            invalidFlag = true;
-        }
-    
-        if (role && isRoleString(role)) {
-            invalidField.role = ErrorMessages.MESSAGE_ROLE_INVALID;
-            invalidFlag = true;
-        } else if (!role) {
-            invalidField.role = ErrorMessages.MESSAGE_ROLE_REQUIRED;
-            invalidFlag = true;
-        }
-    
-        if (inviteToken && isUUID(inviteToken)) {
-            invalidField.inviteToken = ErrorMessages.MESSAGE_UUID_INVALID;
-            invalidFlag = true;
-        } else if (role === 'guest' && !inviteToken) {
-            invalidField.inviteToken = ErrorMessages.MESSAGE_INVITETOKEN_REQUIRED;
-            invalidFlag = true;
-        }
-    
-        if (invalidFlag) {
+        if (invalidField.size > 0) {
             logger.info(`webSocket接続時の不正なパラメタ id:${roomID} role:${role} locator:${locator} inviteToken:${inviteToken}`);
             await socket.send({
                 action: 'INVALID_ACTION',
@@ -334,6 +296,43 @@ async function closeRoom(room: SocketRoom, invokeFunction: (request: ChaincodeIn
             room.guestSocket.close();
         }
     }
+}
+
+function validate(validateObject: ValidateObject):Map<string, string> {
+    const errorMessages = new Map<string, string>();
+
+    if (validateObject.roomID && !isUUID(validateObject.roomID)) {
+        errorMessages.set('roomID', ErrorMessages.MESSAGE_UUID_INVALID);
+    } else if (!validateObject.roomID) {
+        errorMessages.set('roomID', ErrorMessages.MESSAGE_UUID_INVALID);
+    }
+
+    if (validateObject.locator && isLocator(validateObject.locator)) {
+        errorMessages.set('locator', ErrorMessages.MESSAGE_LOCATOR_INVALID);
+    } else if (!validateObject.locator) {
+        errorMessages.set('locator', ErrorMessages.MESSAGE_LOCATOR_REQUIRED);
+    }
+
+    if (validateObject.role && isRoleString(validateObject.role)) {
+        errorMessages.set('role', ErrorMessages.MESSAGE_ROLE_INVALID);
+    } else if (!validateObject.role) {
+        errorMessages.set('role', ErrorMessages.MESSAGE_ROLE_REQUIRED);
+    }
+
+    if (validateObject.inviteToken && isUUID(validateObject.inviteToken)) {
+        errorMessages.set('inviteToken', ErrorMessages.MESSAGE_UUID_INVALID);
+    } else if (validateObject.role === 'guest' && !validateObject.inviteToken) {
+        errorMessages.set('inviteToken', ErrorMessages.MESSAGE_INVITETOKEN_REQUIRED);
+    }
+    return errorMessages;
+}
+
+
+interface ValidateObject {
+    readonly roomID: UUID;
+    readonly locator: Locator;
+    readonly role: RoleString;
+    readonly inviteToken: UUID;
 }
 
 async function commitRental(room: SocketRoom, isbn: string, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>): Promise<void> {

@@ -7,7 +7,7 @@ export type Locator = '(UserID)@(FQDN)';
 export type RoomPurpose = 'rental' | 'return';
 export type ISBN = '13桁のISBN（ハイフンなし）';
 export type BooleanString = 'trueまたはfalse';
-export type RoleString = 'inviterまたはguest'; 
+export type RoleString = 'inviter' | 'guest'; 
 export type UUID = 'ハイフンが必要';
 
 const isDomainName = require('is-domain-name');
