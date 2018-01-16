@@ -4,12 +4,11 @@ import ws = require('ws');
 import { Server, IncomingMessage } from 'http';
 import * as url from 'url';
 import { logger } from './logger';
-import { isUUID, isRoleString, isLocator, isISBN, isRoomPurpose } from './util';
+import { isUUID, isRoleString, isLocator, isISBN, isRoomPurpose, UUID, FQDN, RoomPurpose, Locator } from './util';
 import { ErrorMessages } from './messages';
-import { roomPool, SocketRoom } from './roomPool';
 import { ISBN } from 'isbn-utils';
 
-
+const roomPool = new Map<UUID, SocketRoom>();
 const uuidv4 = require('uuid/v4');
 
 export function createWebSocketServer(
@@ -363,3 +362,21 @@ const invokeRentalBase = {
         getTransactionID(): string {throw new Error('呼ばれないはずだ'); return 'hoge'; },
     },
 };
+
+export interface SocketRoom {
+    room: {
+        readonly id: UUID;
+        readonly host: FQDN;
+        readonly purpose: RoomPurpose;
+        readonly inviter: Locator;
+        guest: Locator | undefined;
+        readonly createdAt: Date;
+        closedAt: Date | undefined;
+    };
+    isbn: string;
+    inviterApproved: boolean;
+    guestApproved: boolean;
+    inviteToken: UUID;
+    inviterSocket : ws | undefined;
+    guestSocket: ws | undefined;
+}
