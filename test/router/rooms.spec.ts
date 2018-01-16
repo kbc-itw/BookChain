@@ -55,16 +55,6 @@ describe('roomsRouter /rooms post', () => {
         try {
             const result = await testPost(server, '/rooms', data);
             chai.expect(result.status).to.be.equal(201);
-            chai.expect(result.body).to.be.deep.equal({
-                room: {
-                    host: 'kbc-itw.net',
-                    id: '6397a19a-bc25-4d73-9dad-98187c1eb698',
-                    purpose: 'rental',
-                    inviter: 'huruikagi@example.com',
-                    createdAt: '2017-11-22T07:16:55.316Z',
-                },
-                inviteToken: 'JUGt2HUkqFTUfkyuC0MfmSN9BCdZPKDTSdOY',
-            });
         } catch (e) {
             chai.assert.fail();
         }

@@ -1,6 +1,7 @@
 export enum ErrorMessages {
     MESSAGE_OWNER_INVALID = 'ownerにはlocatorを指定します',
     MESSAGE_BORROWER_INVALID = 'borrowerにはlocatorを指定します',
+    MESSAGE_LOCATOR_INVALID = 'locatorはlocalID + @ + FQDN形式です',
     MESSAGE_ISBN_INVALID = 'isbnには13桁のisbnを指定します',
     MESSAGE_ISRETURNED_INVALID = 'isReturnedにはtrueかfalseを指定します',
     MESSAGE_LIMIT_INVALID = 'limitには0より大きい整数を指定します',
@@ -9,6 +10,7 @@ export enum ErrorMessages {
     MESSAGE_UUID_INVALID = 'UUIDには32桁ハイフンありのUUIDを指定します',
     MESSAGE_LOCAL_ID_INVALID = 'ローカルIDにはIDを指定します',
     MESSAGE_ROOM_PURPOSE_INVALID = 'purposeにはrentalかreturnを指定します',
+    MESSAGE_ROLE_INVALID = 'roleにはinviterかguestを指定します',    
     MESSAGE_INVITER_INVALID = 'inviterにはlocatorを指定します',
     MESSAGE_OWNER_REQUIRED = 'ownerは必須です',
     MESSAGE_ISBN_REQUIRED = 'isbnは必須です',
@@ -17,4 +19,9 @@ export enum ErrorMessages {
     MESSAGE_ROOM_PURPOSE_REQUIRED = 'purposeは必須です',
     MESSAGE_INVITER_REQUIRED = 'inviterは必須です',
     MESSAGE_UUID_REQUIRED = 'UUIDは必須です',
+    MESSAGE_ROLE_REQUIRED = 'roleは必須です',
+    MESSAGE_LOCATOR_REQUIRED = 'locatorは必須です',
+    MESSAGE_INVITETOKEN_REQUIRED = 'roleがguestの場合、inviteTokenは必須です',
+    MESSAGE_ROOM_DOESNT_EXIST = '指定されたIDの部屋は存在しません',
+    
 }
