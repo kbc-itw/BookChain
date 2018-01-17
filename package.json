@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@types/app-root-path": "^1.2.4",
+    "@types/bytebuffer": "^5.0.35",
     "@types/chai": "^4.0.10",
     "@types/chai-as-promised": "^7.1.0",
     "@types/chai-http": "^3.0.3",
