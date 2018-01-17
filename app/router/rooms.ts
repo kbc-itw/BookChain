@@ -5,7 +5,7 @@ import { ErrorMessages } from '../messages';
 import { IServerConfig } from '../config/IServerConfig';
 import * as config from 'config';
 import { isAuthenticated } from '../authenticator';
-import { SocketRoom } from "../roomWebSocket";
+import { SocketRoom } from '../roomWebSocket';
 
 const uuidv4 = require('uuid/v4');
 
