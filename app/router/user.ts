@@ -68,6 +68,6 @@ const queryBase = {
     chaincodeId:'user',
     // TODO transactionIDは不要であるはずだ
     txId: {
-        getTransactionID(): string {throw new Error('呼ばれないはずだ'); return 'hoge';},
+        getTransactionID(): string {throw new Error('呼ばれないはずだ'); },
     },
 };

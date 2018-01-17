@@ -70,6 +70,6 @@ export function createRoomsRouter(
 const invokeBase = {
     chaincodeId: 'room',
     txId: {
-        getTransactionID(): string {throw new Error('呼ばれないはずだ'); return 'hoge'; },
+        getTransactionID(): string {throw new Error('呼ばれないはずだ'); },
     },
 };

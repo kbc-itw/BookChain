@@ -112,7 +112,7 @@ export function createTradingsRouter(
             res.status(200).json(result);
         } catch (e) {
             logger.info(`chaincodeエラー ${e}`);
-            res.status(500).json({error: true});
+            res.status(500).json({ error: true });
         }
 
     });
@@ -127,6 +127,6 @@ const queryBase = {
     chaincodeId:'tradings',
     // TODO transactionIDは不要であるはずだ
     txId: {
-        getTransactionID(): string {throw new Error('呼ばれないはずだ'); return 'hoge';},
+        getTransactionID(): string {throw new Error('呼ばれないはずだ'); },
     },
 };
