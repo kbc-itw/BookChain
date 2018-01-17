@@ -351,14 +351,14 @@ async function commitRental(room: SocketRoom, isbn: string, invokeFunction: (req
 const invokeBase = {
     chaincodeId: 'room',
     txId: {
-        getTransactionID(): string {throw new Error('呼ばれないはずだ'); return 'hoge'; },
+        getTransactionID(): string {throw new Error('呼ばれないはずだ'); },
     },
 };
 
 const invokeRentalBase = {
     chaincodeId: 'trading',
     txId: {
-        getTransactionID(): string {throw new Error('呼ばれないはずだ'); return 'hoge'; },
+        getTransactionID(): string {throw new Error('呼ばれないはずだ'); },
     },
 };
 
