@@ -48,7 +48,7 @@ describe('roomsRouter /rooms post', () => {
             inviter: 'huruikagi@example.com',
         };
 
-        app.use('/rooms', createRoomsRouter(stubQueryFunction, stubInvokeFunction));
+        app.use('/rooms', createRoomsRouter(new Map(), stubQueryFunction, stubInvokeFunction));
         
         try {
             const result = await testPost(server, '/rooms', data);
@@ -80,7 +80,7 @@ describe('roomsRouter /rooms post', () => {
             { purpose: '',         inviter: '' },
         ];
 
-        app.use('/rooms', createRoomsRouter(stubQueryFunction, stubInvokeFunction));
+        app.use('/rooms', createRoomsRouter(new Map(), stubQueryFunction, stubInvokeFunction));
         
         for (const data of datas) {
             await chai.expect(testPost(server, '/rooms', data)).to.be.rejectedWith('Bad Request');
@@ -95,7 +95,7 @@ describe('roomsRouter /rooms post', () => {
             inviter: 'huruikagi@example.com',
         };
 
-        app.use('/rooms', createRoomsRouter(stubQueryFunction, stubInvokeFunction));
+        app.use('/rooms', createRoomsRouter(new Map(), stubQueryFunction, stubInvokeFunction));
 
         await chai.expect(testPost(server, '/rooms', data)).to.be.rejectedWith('Internal Server Error');
     });

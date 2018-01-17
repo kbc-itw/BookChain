@@ -1,16 +1,18 @@
 import { Router, Response, Request } from 'express';
-import { isLocator, isISBN, isRoomPurpose } from '../util';
+import { isLocator, isISBN, isRoomPurpose, UUID } from '../util';
 import { logger } from '../logger';
 import { ErrorMessages } from '../messages';
 import { IServerConfig } from '../config/IServerConfig';
 import * as config from 'config';
 import { isAuthenticated } from '../authenticator';
-import { roomPool } from '../roomPool';
+import { SocketRoom } from "../roomWebSocket";
 
 const uuidv4 = require('uuid/v4');
 
 export function createRoomsRouter(
-    queryFunction: (request: ChaincodeQueryRequest) => Promise<any>, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<any>,
+    roomPool: Map<UUID, SocketRoom>,
+    queryFunction: (request: ChaincodeQueryRequest) => Promise<any>,
+    invokeFunction: (request: ChaincodeInvokeRequest) => Promise<any>,
 ): Router {
     const router = Router();
 

@@ -8,11 +8,14 @@ import { isUUID, isRoleString, isLocator, isISBN, isRoomPurpose, UUID, FQDN, Roo
 import { ErrorMessages } from './messages';
 import { ISBN } from 'isbn-utils';
 
-const roomPool = new Map<UUID, SocketRoom>();
 const uuidv4 = require('uuid/v4');
 
 export function createWebSocketServer(
-    server: Server, path: string, queryFunction: (request: ChaincodeQueryRequest) => Promise<any>, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
+    server: Server,
+    path: string,
+    roomPool: Map<UUID, SocketRoom>,
+    queryFunction: (request: ChaincodeQueryRequest) => Promise<any>,
+    invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
 ): void {
     const wss = new ws.Server({ server, path });
 
