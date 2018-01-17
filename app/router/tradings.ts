@@ -112,7 +112,7 @@ export function createTradingsRouter(
             res.status(200).json(result);
         } catch (e) {
             logger.info(`chaincodeエラー ${e}`);
-            res.status(500).json({error: true});
+            res.status(500).json({ error: true });
         }
 
     });
