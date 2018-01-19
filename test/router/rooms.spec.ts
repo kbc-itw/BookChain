@@ -51,7 +51,7 @@ describe('roomsRouter /rooms post', () => {
         app.use('/rooms', createRoomsRouter(new Map(), stubQueryFunction, stubInvokeFunction));
         
         try {
-            const result = await testPost(server, '/rooms', data);
+            const result = await testPost(server, '/rooms?purpose=rental&inviter=huruikagi@example.com', {});
             chai.expect(result.status).to.be.equal(201);
         } catch (e) {
             chai.assert.fail();
@@ -72,32 +72,30 @@ describe('roomsRouter /rooms post', () => {
         });
 
         const datas = [
-            { purpose: 'hogehoge', inviter: 'huruikagi@example.com' },
-            { purpose: '',         inviter: 'huruikagi@example.com' },
-            { purpose: 'hogehoge', inviter: 'foobarfoobarfoob@example.com' },
-            { purpose: 'hogehoge', inviter: '' },
-            { purpose: '',         inviter: 'foobarfoobarfoob@example.com' },
-            { purpose: '',         inviter: '' },
+            'purpose=rental&inviter=foobarfoobarfoob@example.com',
+            'purpose=rental&inviter=',
+            'purpose=hogehoge&inviter=huruikagi@example.com',
+            'purpose=hogehoge&inviter=foobarfoobarfoob@example.com',
+            'purpose=hogehoge&inviter=',
+            'purpose=&inviter=huruikagi@example.com',
+            'purpose=&inviter=foobarfoobarfoob@example.com',
+            'purpose=&inviter=',
         ];
 
         app.use('/rooms', createRoomsRouter(new Map(), stubQueryFunction, stubInvokeFunction));
         
         for (const data of datas) {
-            await chai.expect(testPost(server, '/rooms', data)).to.be.rejectedWith('Bad Request');
+            await chai.expect(testPost(server, '/rooms?' + data, {})).to.be.rejectedWith('Bad Request');
         }
     });
 
     it('通信後chaincodeがthrowしてきた', async () => {
         const stubQueryFunction = (request: ChaincodeQueryRequest) => Promise.reject(new Error('エラーだよ'));
         const stubInvokeFunction = (request: ChaincodeInvokeRequest) => Promise.reject(new Error('エラーだよ'));
-        const data = {
-            purpose: 'rental',
-            inviter: 'huruikagi@example.com',
-        };
 
         app.use('/rooms', createRoomsRouter(new Map(), stubQueryFunction, stubInvokeFunction));
 
-        await chai.expect(testPost(server, '/rooms', data)).to.be.rejectedWith('Internal Server Error');
+        await chai.expect(testPost(server, '/rooms?purpose=rental&inviter=huruikagi@example.com', {})).to.be.rejectedWith('Internal Server Error');
     });
 
 });

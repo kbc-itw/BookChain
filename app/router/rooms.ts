@@ -17,7 +17,7 @@ export function createRoomsRouter(
     const router = Router();
 
     router.post('/', isAuthenticated, async(req: Request, res: Response) => {
-        const { purpose, inviter } = req.body;
+        const { purpose, inviter } = req.query;
         const serverConfig = config.get<IServerConfig>('server');
         let invalidFlag = false;
         const invalidRequestMessage = {
