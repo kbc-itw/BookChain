@@ -1,3 +1,4 @@
+import { IWebSocketConfig } from './config/IWSConfig';
 import { Router, Application } from 'express';
 
 import ws = require('ws');
@@ -9,6 +10,7 @@ import { ErrorMessages } from './messages';
 import { ISBN } from 'isbn-utils';
 import * as config from 'config';
 import { IServerConfig } from './config/IServerConfig';
+
 const uuidv4 = require('uuid/v4');
 
 export function createWebSocketServer(
@@ -19,10 +21,8 @@ export function createWebSocketServer(
     invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
 ): Promise<ws.Server> {
     return new Promise<ws.Server>((resolve, reject) => {
-        const { port, host } = config.get<IServerConfig>('server');
-        const wss = new ws.Server({ server, path,  port, host }, () => {
-
-            
+        const { port, host } = config.get<IWebSocketConfig>('webSocket');
+        const wss = new ws.Server({ server, path, port, host }, () => {
             wss.on('connection', async (socket: ws, req: IncomingMessage) => {
                 if (!req.url) {
                     // req.urlはundefinedの可能性がある

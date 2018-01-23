@@ -3,6 +3,10 @@
         "host": "hoge",
         "port": 80
     },
+    "webSocket": {
+        "host": "hoge",
+        "port": 8080
+    },
     "log4js": {
         "useLevel": "info"
     }

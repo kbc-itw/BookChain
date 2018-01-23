@@ -3,6 +3,10 @@
         "host": "localhost",
         "port": 3000
     },
+    "webSocket": {
+        "host": "hoge",
+        "port": 3001
+    },
     "log4js": {
         "useLevel": "trace"
     }
