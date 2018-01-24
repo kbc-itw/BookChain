@@ -4,4 +4,11 @@ export interface ISecrets {
         readonly FACEBOOK_APP_ID: string;
         readonly FACEBOOK_APP_SECRET: string;
     };
+    readonly couch: {
+        readonly USER_NAME: string;
+        readonly USER_PASSWORD: string;
+        readonly DB_NAME: string;
+        readonly HOST: string;
+        readonly PORT: number;
+    }
 }
