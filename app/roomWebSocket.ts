@@ -33,14 +33,14 @@ export function createWebSocketServer(
                     return;
                 }
             
-                const parsedURL = url.parse(req.url);
+                const parsedURL = url.parse(req.url, true);
                 const { roomID, locator, role, inviteToken } = parsedURL.query;
                 
                 const invalidField = validate({ roomID, locator, role, inviteToken });
 
                 if (invalidField.size > 0) {
                     logger.info(`webSocket接続時の不正なパラメタ id:${roomID} role:${role} locator:${locator} inviteToken:${inviteToken}`);
-                    await socket.send({
+                    await socket.send(JSON.stringify({
                         action: 'INVALID_ACTION',
                         data: {
                             youSend: {
@@ -52,7 +52,7 @@ export function createWebSocketServer(
                             },
                             message: 'invalid parameters',
                         },
-                    });
+                    }));
                     socket.close();
                     return;
                 }
@@ -317,19 +317,19 @@ function validate(validateObject: ValidateObject):Map<string, string> {
         errorMessages.set('roomID', ErrorMessages.MESSAGE_UUID_INVALID);
     }
 
-    if (validateObject.locator && isLocator(validateObject.locator)) {
+    if (validateObject.locator && !isLocator(validateObject.locator)) {
         errorMessages.set('locator', ErrorMessages.MESSAGE_LOCATOR_INVALID);
     } else if (!validateObject.locator) {
         errorMessages.set('locator', ErrorMessages.MESSAGE_LOCATOR_REQUIRED);
     }
 
-    if (validateObject.role && isRoleString(validateObject.role)) {
+    if (validateObject.role && !isRoleString(validateObject.role)) {
         errorMessages.set('role', ErrorMessages.MESSAGE_ROLE_INVALID);
     } else if (!validateObject.role) {
         errorMessages.set('role', ErrorMessages.MESSAGE_ROLE_REQUIRED);
     }
 
-    if (validateObject.inviteToken && isUUID(validateObject.inviteToken)) {
+    if (validateObject.inviteToken && !isUUID(validateObject.inviteToken)) {
         errorMessages.set('inviteToken', ErrorMessages.MESSAGE_UUID_INVALID);
     } else if (validateObject.role === 'guest' && !validateObject.inviteToken) {
         errorMessages.set('inviteToken', ErrorMessages.MESSAGE_INVITETOKEN_REQUIRED);
