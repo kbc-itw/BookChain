@@ -1,7 +1,7 @@
 import * as nano from 'nano';
-import { ISecrets } from "./config/ISecrets";
-import { DisplayName, LocalID } from "./util";
-import { Profile as FacebookProfile } from "passport-facebook";
+import { ISecrets } from './config/ISecrets';
+import { DisplayName, LocalID } from './util';
+import { Profile as FacebookProfile } from 'passport-facebook';
 
 
 const {
@@ -74,8 +74,9 @@ export namespace AuthDb {
                         }
                     },
                     fields: [
-                        "_id",
-                        "auth"
+                        // ※'_rev' を引っ張ってこないようにする。
+                        '_id',
+                        'auth'
                     ],
                     limit: 2,
                 };
