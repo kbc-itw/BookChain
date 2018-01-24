@@ -8,6 +8,6 @@
         "port": 3001
     },
     "log4js": {
-        "useLevel": "fatal"
+        "useLevel": "info"
     }
 }
