@@ -280,6 +280,7 @@ async function commitment(room: SocketRoom, queryFunction: (request: ChaincodeQu
             returnedAt: trading.returnedAt,
         },
     };
+    commitRental(room, room.isbn, invokeFunction);
     if (room.inviterSocket) {
         await room.inviterSocket.send(commitment);
     }
