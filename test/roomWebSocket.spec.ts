@@ -80,7 +80,26 @@ describe('webSocket', () => {
     });
 
     it('借りる', async () => {
-        chai.expect(wss).not.to.be.undefined;
+        // webSocketClientの立ち上げ
+        inviterClient = new client();
+        const p = new Promise((resolve, reject) => {
+            inviterClient.on('connectFailed', (error: Error) => {
+                console.log('Connect Error: ' + error.toString());
+                reject(error);
+            });
+            inviterClient.on('connect', (connection: connection) => {
+                console.log('WebSocket Client Connected');
+                resolve(connection);
+            });
+        });
+
+        inviterClient.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
+        try {
+            chai.expect(await p).not.to.be.undefined;
+        } catch (e) {
+            chai.assert.fail(e);
+        }
+        // chai.expect(wss).not.to.be.undefined;
     });
 
     function getUniqueStr(): UUID {
