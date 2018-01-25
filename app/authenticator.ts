@@ -34,7 +34,7 @@ const facebookStrategy = new FaceBookStrategy({
 });
 
 
-passport.serializeUser((auth: IUserAuth, done) => {
+passport.serializeUser((auth: IUserAuth & { _id?: string }, done) => {
     done(null, { authId: auth._id });
 });
 

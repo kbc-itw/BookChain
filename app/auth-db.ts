@@ -20,8 +20,6 @@ const authDb = nano(`http://${USER_NAME}:${USER_PASSWORD}@${HOST}:${PORT}/${AUTH
  * ユーザーの認証情報を表すインターフェース
  */
 export interface IUserAuth {
-    _id?: string;
-    _rev?: string;
     localId?: LocalID;
     displayName?: DisplayName;
     facebook: {
@@ -104,7 +102,7 @@ export namespace AuthDb {
 
             const response = await findWithPromise(query);
 
-            let auth: IUserAuth;
+            let auth: IUserAuth & nano.MaybeDocument;
 
             if (response.docs.length === 0) {
                 // 未登録ユーザーだったとき
