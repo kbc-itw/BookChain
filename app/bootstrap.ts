@@ -37,6 +37,8 @@ export function configureUse(app: express.Application) {
     }));
     app.use(session({
         secret: secret.SESSION_SECRET,
+        resave: true,
+        saveUninitialized: false,
         store: new (connectCouchDB(session))({
             name: secret.couch.AUTH_DB_NAME,
             username: secret.couch.USER_NAME,
