@@ -9,11 +9,11 @@ const {
     USER_PASSWORD,
     HOST,
     PORT,
-    DB_NAME
+    AUTH_DB_NAME,
 } = (require('../config/secrets.json') as ISecrets).couch;
 
 
-const authDb = nano(`http://${USER_NAME}:${USER_PASSWORD}@${HOST}:${PORT}/${DB_NAME}`) as nano.DocumentScope<IUserAuth>;
+const authDb = nano(`http://${USER_NAME}:${USER_PASSWORD}@${HOST}:${PORT}/${AUTH_DB_NAME}`) as nano.DocumentScope<IUserAuth>;
 
 
 /**

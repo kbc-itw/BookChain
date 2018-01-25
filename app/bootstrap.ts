@@ -1,6 +1,8 @@
 import { ISecrets } from './config/ISecrets';
 import { Server } from 'http';
 import * as express from 'express';
+import * as session from 'express-session';
+import * as connectCouchDB from 'connect-couchdb';
 import { chainCodeQuery, chainCodeInvoke } from './chaincode-connection';
 import { createUserRouter } from './router/user';
 import { logger } from './logger';
@@ -9,8 +11,9 @@ import { passport, isAuthenticated } from './authenticator';
 import { Request, Response } from 'express-serve-static-core';
 import { createAuthenticationRouter } from './router/authenticate';
 
-const session = require('express-session');
+
 const secret = require('../config/secrets.json') as ISecrets;
+
 /**
  * listenで起動可能なexpressアプリケーションを返す。
  * 呼び出しごとに別のアプリケーションを生成することに注意。
@@ -32,7 +35,15 @@ export function configureUse(app: express.Application) {
     app.use(bodyParser.urlencoded({
         extended: true,
     }));
-    app.use(session({ secret:secret.SESSION_SECRET }));
+    app.use(session({
+        secret: secret.SESSION_SECRET,
+        store: new (connectCouchDB(session))({
+            name: secret.couch.AUTH_DB_NAME,
+            username: secret.couch.USER_NAME,
+            password: secret.couch.USER_PASSWORD,
+            host: secret.couch.HOST,
+        })
+    }));
     app.use(bodyParser.json());
     app.use(passport.initialize());
     app.use(passport.session());
