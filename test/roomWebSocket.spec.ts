@@ -54,13 +54,15 @@ describe('webSocket', () => {
     const wsHost = wsConfig.host;
 
     beforeEach((done) => {
+        const roomMap = new Map<UUID, SocketRoom>();
+        roomMap.set(uuid, socketRoom);
         app = express();
         app.use(bodyParser.urlencoded({
             extended: true,
         }));
         app.use(bodyParser.json());
         server = app.listen(port, host, () => {
-            createWebSocketServer(server, '/rooms/connect', new Map(), async () => {}, async () => {})
+            createWebSocketServer(server, '/rooms/connect', roomMap, async () => {}, async () => {})
                 .then((result) => {
                     wss = result;
                     done();
