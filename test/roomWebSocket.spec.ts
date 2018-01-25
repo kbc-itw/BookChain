@@ -9,6 +9,8 @@ import * as ws from 'ws';
 import { IWebSocketConfig } from '../app/config/IWSConfig';
 import * as bodyParser from 'body-parser';
 import { createWebSocketServer, SocketRoom } from '../app/roomWebSocket';
+import * as webSocket from 'websocket';
+
 const uuidv4 = require('uuid/v4');
 chai.use(require('chai-as-promised'));
 
@@ -16,6 +18,7 @@ describe('webSocket', () => {
     let app: express.Express;
     let server: http.Server;
     let wss: ws.Server;
+    let client: webSocket.client;
     const serverConfig = config.get<IServerConfig>('server');
     const { port, host } = serverConfig;
     const uuid: UUID = getUniqueStr();
