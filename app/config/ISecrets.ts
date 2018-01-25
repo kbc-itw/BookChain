@@ -7,7 +7,8 @@ export interface ISecrets {
     readonly couch: {
         readonly USER_NAME: string;
         readonly USER_PASSWORD: string;
-        readonly DB_NAME: string;
+        readonly AUTH_DB_NAME: string;
+        readonly SESSION_DB_NAME: string;
         readonly HOST: string;
         readonly PORT: number;
     }
