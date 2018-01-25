@@ -11,5 +11,5 @@ export interface ISecrets {
         readonly SESSION_DB_NAME: string;
         readonly HOST: string;
         readonly PORT: number;
-    }
+    };
 }
