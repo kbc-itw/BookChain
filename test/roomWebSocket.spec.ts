@@ -80,8 +80,8 @@ describe('webSocket', () => {
     it('借りる', async () => {
         // webSocketClientの立ち上げ
         try {
-            const inviterConnection: connection = await inviterConnect;
-            const guestConnection = await guestConnect;
+            const inviterConn = await inviterConnect();
+            const guestConne = await guestConnect();
         } catch (e) {
             chai.assert.fail(e);
         }
@@ -96,32 +96,50 @@ describe('webSocket', () => {
         throw new Error();
     }
 
-    const inviterConnect: Promise< connection> = new Promise((resolve, reject) => {
-        const connection = new client();
-        connection.on('connectFailed', (error: Error) => {
-            console.log('Connect Error: ' + error.toString());
-            reject(error);
-        });
-        connection.on('connect', (connection: connection) => {
-            console.log('WebSocket inviterClient Connected');
-            resolve(connection);
-        });
+    function inviterConnect(): Promise<connection | Error> {
+        return new Promise((resolve, reject) => {
+            const connection = new client();
+            connection.on('connectFailed', (error: Error) => {
+                console.log('Connect Error invite: ' + error.toString());
+                reject(error);
+            });
+            connection.on('connect', (connection: connection) => {
+                console.log('WebSocket inviterClient Connected');
+                resolve(connection);
 
-        connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
-    });
+                connection.on('message', (message) => {
+                    if (message.type === 'utf8') {
+                        console.log('Received: ' + message.utf8Data);
+                    }
+                });
+            });
 
-    const guestConnect: Promise< connection | Error> = new Promise((resolve, reject) => {
-        const connection = new client();
-        connection.on('connectFailed', (error: Error) => {
-            console.log('Connect Error: ' + error.toString());
-            reject(error);
+            connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
         });
-        connection.on('connect', (connection: connection) => {
-            console.log('WebSocket guestClient Connected');
-            resolve(connection);
+    }
+
+    function guestConnect(): Promise<connection | Error> {
+        return new Promise((resolve, reject) => {
+            const connection = new client();
+            connection.on('connectFailed', (error: Error) => {
+                console.log('Connect Error guest: ' + error.toString());
+                reject(error);
+            });
+            connection.on('connect', (connection: connection) => {
+                console.log('WebSocket guestClient Connected');
+                resolve(connection);
+
+                connection.on('message', (message) => {
+                    if (message.type === 'utf8' && message.utf8Data) {
+                        const val = JSON.parse(message.utf8Data);
+                        console.log('guest');
+                        console.log(message);
+                    }
+                });
+            });
+            connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&locator=${guest}&role=guest&inviteToken=${tokenUUID}`);
         });
-        connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&locator=${guest}&role=guest&inviteToken=${tokenUUID}`);
-    });
+    }
 
 
 
