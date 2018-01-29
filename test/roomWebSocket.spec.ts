@@ -96,18 +96,18 @@ describe('webSocket', () => {
         throw new Error();
     }
 
-    const inviterConnect: Promise< connection | Error> = new Promise((resolve, reject) => {
-        const inviterClient = new client();
-        inviterClient.on('connectFailed', (error: Error) => {
+    const inviterConnect: Promise< connection> = new Promise((resolve, reject) => {
+        const connection = new client();
+        connection.on('connectFailed', (error: Error) => {
             console.log('Connect Error: ' + error.toString());
             reject(error);
         });
-        inviterClient.on('connect', (connection: connection) => {
-            console.log('WebSocket Client Connected');
+        connection.on('connect', (connection: connection) => {
+            console.log('WebSocket inviterClient Connected');
             resolve(connection);
         });
 
-        inviterClient.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
+        connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
     });
 
 
