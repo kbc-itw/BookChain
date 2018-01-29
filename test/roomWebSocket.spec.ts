@@ -9,7 +9,7 @@ import * as ws from 'ws';
 import { IWebSocketConfig } from '../app/config/IWSConfig';
 import * as bodyParser from 'body-parser';
 import { createWebSocketServer, SocketRoom } from '../app/roomWebSocket';
-import { connection, client } from 'websocket';
+import { connection, client as Client } from 'websocket';
 
 const uuidv4 = require('uuid/v4');
 chai.use(require('chai-as-promised'));
@@ -98,12 +98,12 @@ describe('webSocket', () => {
 
     function inviterConnect(): Promise<connection | Error> {
         return new Promise((resolve, reject) => {
-            const connection = new client();
-            connection.on('connectFailed', (error: Error) => {
+            const client = new Client();
+            client.on('connectFailed', (error: Error) => {
                 console.log('Connect Error invite: ' + error.toString());
                 reject(error);
             });
-            connection.on('connect', (connection: connection) => {
+            client.on('connect', (connection: connection) => {
                 console.log('WebSocket inviterClient Connected');
                 resolve(connection);
 
@@ -122,18 +122,18 @@ describe('webSocket', () => {
 
             });
 
-            connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
+            client.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
         });
     }
 
     function guestConnect(): Promise<connection | Error> {
         return new Promise((resolve, reject) => {
-            const connection = new client();
-            connection.on('connectFailed', (error: Error) => {
+            const client = new Client();
+            client.on('connectFailed', (error: Error) => {
                 console.log('Connect Error guest: ' + error.toString());
                 reject(error);
             });
-            connection.on('connect', (connection: connection) => {
+            client.on('connect', (connection: connection) => {
                 console.log('WebSocket guestClient Connected');
                 resolve(connection);
 
@@ -153,7 +153,7 @@ describe('webSocket', () => {
                 });
                 
             });
-            connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&locator=${guest}&role=guest&inviteToken=${tokenUUID}`);
+            client.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&locator=${guest}&role=guest&inviteToken=${tokenUUID}`);
         });
     }
 
