@@ -18,8 +18,6 @@ describe('webSocket', () => {
     let app: express.Express;
     let server: http.Server;
     let wss: ws.Server;
-    let inviterClient: client;
-    let guestClient: client;
     const serverConfig = config.get<IServerConfig>('server');
     const { port, host } = serverConfig;
     const uuid: UUID = getUniqueStr();
