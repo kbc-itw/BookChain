@@ -80,8 +80,8 @@ describe('webSocket', () => {
     it('借りる', async () => {
         // webSocketClientの立ち上げ
         try {
-            const inviterConn = await inviterConnect();
-            const guestConne = await guestConnect();
+            const inviterConnection = await inviterConnect();
+            const guestConnection = await guestConnect();
         } catch (e) {
             chai.assert.fail(e);
         }
