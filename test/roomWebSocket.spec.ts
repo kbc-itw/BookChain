@@ -81,21 +81,9 @@ describe('webSocket', () => {
 
     it('借りる', async () => {
         // webSocketClientの立ち上げ
-        inviterClient = new client();
-        const p = new Promise((resolve, reject) => {
-            inviterClient.on('connectFailed', (error: Error) => {
-                console.log('Connect Error: ' + error.toString());
-                reject(error);
-            });
-            inviterClient.on('connect', (connection: connection) => {
-                console.log('WebSocket Client Connected');
-                resolve(connection);
-            });
-        });
-
-        inviterClient.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
         try {
-            chai.expect(await p).not.to.be.undefined;
+            const inviter = inviterConnect;
+            chai.expect(await inviter).not.to.be.undefined;
         } catch (e) {
             chai.assert.fail(e);
         }
@@ -109,6 +97,22 @@ describe('webSocket', () => {
         }
         throw new Error();
     }
+
+    const inviterConnect: Promise< connection | Error> = new Promise((resolve, reject) => {
+        const inviterClient = new client();
+        inviterClient.on('connectFailed', (error: Error) => {
+            console.log('Connect Error: ' + error.toString());
+            reject(error);
+        });
+        inviterClient.on('connect', (connection: connection) => {
+            console.log('WebSocket Client Connected');
+            resolve(connection);
+        });
+
+        inviterClient.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
+    });
+
+
 
 });
 
