@@ -112,6 +112,14 @@ describe('webSocket', () => {
                         console.log('Received: ' + message.utf8Data);
                     }
                 });
+
+                connection.on('error', (error) => {
+                    console.log('Connection Error: ' + error.toString());
+                });
+                connection.on('close', () => {
+                    console.log('echo-protocol Connection Closed');
+                });
+
             });
 
             connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&role=inviter&locator=${inviter}`, '');
@@ -136,6 +144,14 @@ describe('webSocket', () => {
                         console.log(message);
                     }
                 });
+
+                connection.on('error', (error) => {
+                    console.log('Connection Error: ' + error.toString());
+                });
+                connection.on('close', () => {
+                    console.log('echo-protocol Connection Closed');
+                });
+                
             });
             connection.connect(`ws://localhost:3001/rooms/connect?roomID=${uuid}&locator=${guest}&role=guest&inviteToken=${tokenUUID}`);
         });
