@@ -33,18 +33,17 @@ export function createWebSocketServer(
                     return;
                 }
             
-                const parsedURL = url.parse(req.url, true);
-                const { roomID, locator, role, inviteToken } = parsedURL.query;
-                
-                const invalidField = validate({ roomID, locator, role, inviteToken });
+                const parsedURL = url.parse(req.url);
+                const { id, locator, role, inviteToken } = parsedURL.query;
+                const invalidField = validate({ id, locator, role, inviteToken });
 
                 if (invalidField.size > 0) {
-                    logger.info(`webSocket接続時の不正なパラメタ id:${roomID} role:${role} locator:${locator} inviteToken:${inviteToken}`);
+                    logger.info(`webSocket接続時の不正なパラメタ id:${id} role:${role} locator:${locator} inviteToken:${inviteToken}`);
                     await socket.send(JSON.stringify({
                         action: 'INVALID_ACTION',
                         data: {
                             youSend: {
-                                roomID,
+                                id,
                                 role,
                                 locator,
                                 inviteToken,
@@ -57,15 +56,15 @@ export function createWebSocketServer(
                     return;
                 }
             
-                const room = roomPool.get(roomID);
+                const room = roomPool.get(id);
             
                 if (typeof room === 'undefined') {
-                    logger.info(`未プールの部屋 ${roomID}`);
+                    logger.info(`未プールの部屋 ${id}`);
                     await socket.send(JSON.stringify({
                         action: 'INVALID_ACTION',
                         data: {
                             youSend: {
-                                roomID,
+                                id,
                             },
                             message: 'room does not exist',
                         },
@@ -122,7 +121,7 @@ export function createWebSocketServer(
                     }
 
                     if (typeof room.inviterSocket === 'undefined') {
-                        logger.info(`inviterSocket存在せず roomID:${room.room.id}`);
+                        logger.info(`inviterSocket存在せず id:${room.room.id}`);
                         await socket.send(JSON.stringify({
                             action: 'INVALID_ACTION',
                             data: {
@@ -152,7 +151,7 @@ export function createWebSocketServer(
                         await invokeFunction({
                             ...invokeBase,
                             fcn: 'guestJoinedRoom',
-                            args:[roomID, locator],
+                            args:[id, locator],
                         });
                     } catch (e) {
                         logger.log(e);
@@ -311,10 +310,10 @@ async function closeRoom(room: SocketRoom, invokeFunction: (request: ChaincodeIn
 function validate(validateObject: ValidateObject):Map<string, string> {
     const errorMessages = new Map<string, string>();
 
-    if (validateObject.roomID && !isUUID(validateObject.roomID)) {
-        errorMessages.set('roomID', ErrorMessages.MESSAGE_UUID_INVALID);
-    } else if (!validateObject.roomID) {
-        errorMessages.set('roomID', ErrorMessages.MESSAGE_UUID_INVALID);
+    if (validateObject.id && !isUUID(validateObject.id)) {
+        errorMessages.set('id', ErrorMessages.MESSAGE_UUID_INVALID);
+    } else if (!validateObject.id) {
+        errorMessages.set('id', ErrorMessages.MESSAGE_UUID_INVALID);
     }
 
     if (validateObject.locator && !isLocator(validateObject.locator)) {
@@ -339,7 +338,7 @@ function validate(validateObject: ValidateObject):Map<string, string> {
 
 
 interface ValidateObject {
-    readonly roomID: UUID;
+    readonly id: UUID;
     readonly locator: Locator;
     readonly role: RoleString;
     readonly inviteToken: UUID;
