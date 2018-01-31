@@ -9,7 +9,7 @@ import * as ws from 'ws';
 import { IWebSocketConfig } from '../app/config/IWSConfig';
 import * as bodyParser from 'body-parser';
 import { createWebSocketServer, SocketRoom } from '../app/roomWebSocket';
-import { connection, client as Client } from 'websocket';
+import { connection, client as Client, IMessage } from 'websocket';
 import { logger } from '../app/logger';
 
 const uuidv4 = require('uuid/v4');
@@ -80,11 +80,56 @@ describe('webSocket', () => {
 
     it('借りる', async () => {
         // webSocketClientの立ち上げ
+
+        const inviterMessageProcess = (message: IMessage, connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => {
+            if (message.type === 'utf8' && message.utf8Data) {
+                const value = JSON.parse(message.utf8Data);
+                switch (value['action']) {
+                case 'PROPOSAL':
+                    connection.send(JSON.stringify({
+                        action: 'APPROVE_PROPOSAL',
+                        data: isbn,
+                    }));
+                    break;
+                case 'COMMITED':
+                    resolve(message.utf8Data);
+                    return;
+                }
+            }
+        };
+
+        const guestMessageProcess = (message: IMessage, connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => {
+            if (message.type === 'utf8' && message.utf8Data) {
+                const value = JSON.parse(message.utf8Data);
+
+                switch (value['action']){
+                case 'ENTRY_PERMITTED':
+                    connection.sendUTF(JSON.stringify({
+                        action: 'REQUEST_PROPOSAL',
+                        data: isbn,
+                    }));
+                    break;
+                case 'PROPOSAL':
+                    connection.sendUTF(JSON.stringify({
+                        action: 'APPROVE_PROPOSAL',
+                    }));
+
+                    break;
+
+                case 'COMMITED':
+                    resolve(message.utf8Data);
+                    return;
+                }
+
+            }
+        };
+
         try {
-            const values  = await Promise.all<string, string>([inviterConnect(),guestConnect()]);
+            const values  = await Promise.all<string, string>([inviterConnect(inviterMessageProcess),guestConnect(guestMessageProcess)]);
 
             const inviterValue = JSON.parse(values[0]);
             const guestValue = JSON.parse(values[1]);
+
             const validate = {
                 action: 'COMMITED',
                 data: {
@@ -112,7 +157,7 @@ describe('webSocket', () => {
         throw new Error();
     }
 
-    function inviterConnect(): Promise<string> {
+    function inviterConnect(messageProcess: (message: IMessage, connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => void): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
@@ -120,23 +165,10 @@ describe('webSocket', () => {
                 reject(error);
             });
             client.on('connect', (connection: connection) => {
-                connection.on('message', (message) => {
-                    if (message.type === 'utf8' && message.utf8Data) {
-                        const value = JSON.parse(message.utf8Data);
-                        switch (value['action']){
-                        case 'PROPOSAL':
-                            connection.send(JSON.stringify({
-                                action: 'APPROVE_PROPOSAL',
-                                data: isbn,
-                            }));
-                            break;
-                        case 'COMMITED':
-                            resolve(message.utf8Data);
-                            break;
-                        }
-                    }
-                });
 
+                connection.on('message', (message) => {
+                    messageProcess(message, connection, resolve, reject);
+                });
                 connection.on('error', (error) => {
                     reject('Connection Error inviter: ' + error.toString());
                 });
@@ -150,7 +182,7 @@ describe('webSocket', () => {
         });
     }
 
-    function guestConnect(): Promise<string> {
+    function guestConnect(messageProcess: (message: IMessage, connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => void): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
@@ -159,29 +191,7 @@ describe('webSocket', () => {
             client.on('connect', (connection: connection) => {
 
                 connection.on('message', (message) => {
-                    if (message.type === 'utf8' && message.utf8Data) {
-                        const value = JSON.parse(message.utf8Data);
-
-                        switch (value['action']){
-                        case 'ENTRY_PERMITTED':
-                            connection.sendUTF(JSON.stringify({
-                                action: 'REQUEST_PROPOSAL',
-                                data: isbn,
-                            }));
-                            break;
-                        case 'PROPOSAL':
-                            connection.sendUTF(JSON.stringify({
-                                action: 'APPROVE_PROPOSAL',
-                            }));
-
-                            break;
-
-                        case 'COMMITED':
-                            resolve(message.utf8Data);
-                            break;
-                        }
-
-                    }
+                    messageProcess(message, connection, resolve, reject);
                 });
 
                 connection.on('error', (error) => {
