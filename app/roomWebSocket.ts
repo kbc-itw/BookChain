@@ -160,6 +160,11 @@ export function createWebSocketServer(
                         return;
                     }
 
+                    socket.on('close', async(data: string) => {
+                        logger.info('クライアントが切断');
+                        await closeRoom(room, invokeFunction);
+                    });
+
                     socket.on('message', async (data: string) => {
                         const params = JSON.parse(data);
                         switch (params.action) {
