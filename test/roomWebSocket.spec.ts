@@ -10,6 +10,7 @@ import { IWebSocketConfig } from '../app/config/IWSConfig';
 import * as bodyParser from 'body-parser';
 import { createWebSocketServer, SocketRoom } from '../app/roomWebSocket';
 import { connection, client as Client } from 'websocket';
+import { logger } from '../app/logger';
 
 const uuidv4 = require('uuid/v4');
 chai.use(require('chai-as-promised'));
