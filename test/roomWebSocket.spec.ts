@@ -97,7 +97,7 @@ describe('webSocket', () => {
         throw new Error();
     }
 
-    function inviterConnect(): Promise<connection | Error> {
+    function inviterConnect(): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
@@ -127,7 +127,7 @@ describe('webSocket', () => {
         });
     }
 
-    function guestConnect(): Promise<connection | Error> {
+    function guestConnect(): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
