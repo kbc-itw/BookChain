@@ -33,7 +33,7 @@ export function createWebSocketServer(
                     return;
                 }
             
-                const parsedURL = url.parse(req.url);
+                const parsedURL = url.parse(req.url, true);
                 const { id, locator, role, inviteToken } = parsedURL.query;
                 const invalidField = validate({ id, locator, role, inviteToken });
 
