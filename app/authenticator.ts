@@ -5,8 +5,10 @@ import * as config from 'config';
 import { NextFunction } from 'express';
 import { Request, Response } from 'express-serve-static-core';
 import { ISecrets } from './config/ISecrets';
+import { AuthDb, IUserAuth } from './auth-db';
 
 export const passport = new Passport();
+
 const domain = config.get<string>('domain');
 const secrets = require('../config/secrets.json') as ISecrets;
 
@@ -22,18 +24,27 @@ const facebookStrategy = new FaceBookStrategy({
     clientID: secrets.facebook.FACEBOOK_APP_ID,
     clientSecret: secrets.facebook.FACEBOOK_APP_SECRET,
     callbackURL: domain + '/auth/facebook/callback',
-},(accessToken, refreshToken, profile, done) => {
-    done(null, null);
+},async (accessToken, refreshToken, profile, done) => {
+    try {
+        const auth: IUserAuth = await AuthDb.facebook.upsert(accessToken, refreshToken, profile);
+        done(null, auth);
+    } catch (err) {
+        done(err);
+    }
 });
 
 
-
-passport.serializeUser((user, done) => {
-    done(null, user);
+passport.serializeUser((auth: IUserAuth & { _id?: string }, done) => {
+    done(null, { authId: auth._id });
 });
 
-passport.deserializeUser((user, done) => {
-    done(null, user);
+passport.deserializeUser(async (session: { authId: string }, done) => {
+    try {
+        const auth: IUserAuth = await AuthDb.get(session.authId);
+        done(null, auth);
+    } catch (err) {
+        done(err);
+    }
 });
 
 
