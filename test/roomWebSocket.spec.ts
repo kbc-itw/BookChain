@@ -146,7 +146,7 @@ describe('webSocket', () => {
 
             });
 
-            client.connect(`ws://localhost:3001/rooms/connect?id=${uuid}&role=inviter&locator=${inviter}`, '');
+            client.connect(`ws://${wsHost}:${wsPort}/rooms/connect?id=${uuid}&role=inviter&locator=${inviter}`, '');
         });
     }
 
@@ -192,7 +192,7 @@ describe('webSocket', () => {
                 });
                 
             });
-            client.connect(`ws://localhost:3001/rooms/connect?id=${uuid}&locator=${guest}&role=guest&inviteToken=${tokenUUID}`);
+            client.connect(`ws://${wsHost}:${wsPort}/rooms/connect?id=${uuid}&locator=${guest}&role=guest&inviteToken=${tokenUUID}`);
         });
     }
 
