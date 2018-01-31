@@ -81,12 +81,27 @@ describe('webSocket', () => {
     it('借りる', async () => {
         // webSocketClientの立ち上げ
         try {
-            const inviterConnection = await inviterConnect();
-            const guestConnection = await guestConnect();
+            const values  = await Promise.all<string, string>([inviterConnect(),guestConnect()]);
+
+            const inviterValue = JSON.parse(values[0]);
+            const guestValue = JSON.parse(values[1]);
+            const validate = {
+                action: 'COMMITED',
+                data: {
+                    isbn,
+                    id: inviterValue.data.id,
+                    owner: 'inviter@example.com',
+                    borrower: 'guest@example.com',
+                    lendAt: inviterValue.data.lendAt,
+                },
+            };
+            chai.expect(inviterValue).to.deep.equal(validate, '招待者のコミットメッセージ');
+            chai.expect(guestValue).to.deep.equal(validate, 'ゲストのコミットメッセージ');
+
         } catch (e) {
+            logger.fatal(e);
             chai.assert.fail(e);
         }
-        // chai.expect(wss).not.to.be.undefined;
     });
 
     function getUniqueStr(): UUID {
@@ -101,24 +116,32 @@ describe('webSocket', () => {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
-                console.log('Connect Error invite: ' + error.toString());
+                reject('Connect Error invite: ' + error.toString());
                 reject(error);
             });
             client.on('connect', (connection: connection) => {
-                console.log('WebSocket inviterClient Connected');
-                resolve(connection);
-
                 connection.on('message', (message) => {
-                    if (message.type === 'utf8') {
-                        console.log('Received: ' + message.utf8Data);
+                    if (message.type === 'utf8' && message.utf8Data) {
+                        const value = JSON.parse(message.utf8Data);
+                        switch (value['action']){
+                        case 'PROPOSAL':
+                            connection.send(JSON.stringify({
+                                action: 'APPROVE_PROPOSAL',
+                                data: isbn,
+                            }));
+                            break;
+                        case 'COMMITED':
+                            resolve(message.utf8Data);
+                            break;
+                        }
                     }
                 });
 
                 connection.on('error', (error) => {
-                    console.log('Connection Error: ' + error.toString());
+                    reject('Connection Error inviter: ' + error.toString());
                 });
                 connection.on('close', () => {
-                    console.log('echo-protocol Connection Closed');
+                    logger.info('echo-protocol Connection Closed');
                 });
 
             });
@@ -131,26 +154,41 @@ describe('webSocket', () => {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
-                console.log('Connect Error guest: ' + error.toString());
-                reject(error);
+                reject('Connect Error guest: ' + error.toString());
             });
             client.on('connect', (connection: connection) => {
-                console.log('WebSocket guestClient Connected');
-                resolve(connection);
 
                 connection.on('message', (message) => {
                     if (message.type === 'utf8' && message.utf8Data) {
-                        const val = JSON.parse(message.utf8Data);
-                        console.log('guest');
-                        console.log(message);
+                        const value = JSON.parse(message.utf8Data);
+
+                        switch (value['action']){
+                        case 'ENTRY_PERMITTED':
+                            connection.sendUTF(JSON.stringify({
+                                action: 'REQUEST_PROPOSAL',
+                                data: isbn,
+                            }));
+                            break;
+                        case 'PROPOSAL':
+                            connection.sendUTF(JSON.stringify({
+                                action: 'APPROVE_PROPOSAL',
+                            }));
+
+                            break;
+
+                        case 'COMMITED':
+                            resolve(message.utf8Data);
+                            break;
+                        }
+
                     }
                 });
 
                 connection.on('error', (error) => {
-                    console.log('Connection Error: ' + error.toString());
+                    reject('Connection Error guest: ' + error.toString());
                 });
                 connection.on('close', () => {
-                    console.log('echo-protocol Connection Closed');
+                    logger.info('echo-protocol Connection Closed');
                 });
                 
             });
