@@ -33,7 +33,7 @@ export function createWebSocketServer(
                     return;
                 }
             
-                const parsedURL = url.parse(req.url);
+                const parsedURL = url.parse(req.url, true);
                 const { id, locator, role, inviteToken } = parsedURL.query;
                 const invalidField = validate({ id, locator, role, inviteToken });
 
@@ -158,6 +158,11 @@ export function createWebSocketServer(
                         closeRoom(room, invokeFunction);
                         return;
                     }
+
+                    socket.on('close', async(data: string) => {
+                        logger.info('クライアントが切断');
+                        await closeRoom(room, invokeFunction);
+                    });
 
                     socket.on('message', async (data: string) => {
                         const params = JSON.parse(data);
