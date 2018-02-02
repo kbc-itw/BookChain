@@ -156,7 +156,54 @@ describe('webSocket', () => {
         }
     });
 
-    it('招待者が取引相手接続待ちキャンセル', async () => {});
+    it('招待者が取引相手接続待ちキャンセル', async () => {
+        const guestMessageProcess = (iMessageProcess :IMessageProcess) => {
+            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
+                const message: string = iMessageProcess.message.utf8Data;
+                const value = JSON.parse(message);
+                switch (value['action']) {
+                case 'TRANSACTION_CANCELED':
+                    iMessageProcess.resolve(message);
+                    return;
+                case 'USER_JOINED' && 'ENTRY_PERMITTED':
+                    break;
+                default:
+                    iMessageProcess.reject(message);
+                    return;
+                }
+            }
+        };
+
+        const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
+            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
+                const value = JSON.parse(iMessageProcess.message.utf8Data);
+                switch (value['action']) {
+                case 'USER_JOINED':
+                    iMessageProcess.connection.sendUTF(JSON.stringify({ action: 'CANCEL_REQUEST' }));
+                    iMessageProcess.resolve(iMessageProcess.message.utf8Data);
+                }
+            }
+        };
+
+        try {
+            const value: [string] = await Promise.all([inviterConnect(inviterMessageProcess),guestConnect(guestMessageProcess)]);
+
+            // const inviter: Map<string, string> = JSON.parse(value[0]);
+            const guest: Map<string, string> = JSON.parse(value[1]);
+
+            const validate = {
+                action: 'TRANSACTION_CANCELED',
+                data: 'inviter canceled transaction',
+            };
+
+            chai.expect(guest).to.deep.equal(validate);
+        }catch (e) {
+            logger.fatal(e);
+            chai.assert.fail(e);
+        }
+
+
+    });
     it('取引内容設定待ちキャンセル', async () => {});
     it('双方へ取引内容の確認', async () => {});
     it('双方から取引内容確認待ち', async () => {});
