@@ -130,11 +130,9 @@ describe('webSocket', () => {
 
             }
         };
-        // 何もしないため中身は入れていない
-        const inviterConnectProcess = (connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => {};
 
         try {
-            const values  = await Promise.all<string, string>([inviterConnect(inviterMessageProcess,inviterConnectProcess),guestConnect(guestMessageProcess)]);
+            const values  = await Promise.all<string, string>([inviterConnect(inviterMessageProcess),guestConnect(guestMessageProcess)]);
 
             const inviterValue = JSON.parse(values[0]);
             const guestValue = JSON.parse(values[1]);
@@ -172,9 +170,7 @@ describe('webSocket', () => {
     }
 
     function inviterConnect(
-        messageProcess: (iMessageProcess: IMessageProcess) => void,
-        connectProcess:(connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => void)
-    : Promise<string> {
+        messageProcess: (iMessageProcess: IMessageProcess) => void): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
@@ -182,9 +178,7 @@ describe('webSocket', () => {
                 reject(error);
             });
             client.on('connect', (connection: connection) => {
-                connectProcess(connection, resolve, reject);
                 connection.on('message', (message) => {
-                    logger.info('message');
                     const iMessageProcess: IMessageProcess  = {
                         message,
                         connection,
