@@ -225,3 +225,9 @@ describe('webSocket', () => {
 
 });
 
+interface IMessageProcess {
+    message: IMessage;
+    connection: connection;
+    resolve: (value?:any) => void;
+    reject: (reason?:any) => void;
+}
