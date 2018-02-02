@@ -91,7 +91,7 @@ export function createWebSocketServer(
                             if (room.guestSocket) {
                                 await room.guestSocket.send(JSON.stringify({
                                     action: 'TRANSACTION_CANCELED',
-                                    data: 'guest canceled transaction',
+                                    data: 'inviter canceled transaction',
                                 }));
                             }
                             closeRoom(room, invokeFunction);
