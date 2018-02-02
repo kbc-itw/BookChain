@@ -23,5 +23,6 @@ export enum ErrorMessages {
     MESSAGE_LOCATOR_REQUIRED = 'locatorは必須です',
     MESSAGE_INVITETOKEN_REQUIRED = 'roleがguestの場合、inviteTokenは必須です',
     MESSAGE_ROOM_DOESNT_EXIST = '指定されたIDの部屋は存在しません',
-    
+    MESSAGE_DISPLAY_NAME_INVALID = 'displaynameは任意の1～50文字の文字列です',
+    MESSAGE_DISPLAY_NAME_REQUIRED = 'displayNameは必須です',
 }
