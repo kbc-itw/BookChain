@@ -165,7 +165,8 @@ describe('webSocket', () => {
                 case 'TRANSACTION_CANCELED':
                     iMessageProcess.resolve(message);
                     return;
-                case 'USER_JOINED' && 'ENTRY_PERMITTED':
+                case 'USER_JOINED':
+                case 'ENTRY_PERMITTED':
                     break;
                 default:
                     iMessageProcess.reject(message);
