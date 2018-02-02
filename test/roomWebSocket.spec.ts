@@ -149,6 +149,11 @@ describe('webSocket', () => {
         }
     });
 
+    it('招待者が取引相手接続待ちキャンセル', async () => {});
+    it('取引内容設定待ちキャンセル', async () => {});
+    it('双方へ取引内容の確認', async () => {});
+    it('双方から取引内容確認待ち', async () => {});
+
     function getUniqueStr(): UUID {
         const uuid = uuidv4();
         if (isUUID(uuid)) {
