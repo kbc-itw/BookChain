@@ -81,48 +81,50 @@ describe('webSocket', () => {
     it('借りる', async () => {
         // webSocketClientの立ち上げ
 
-        const inviterMessageProcess = (message: IMessage, connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => {
-            if (message.type === 'utf8' && message.utf8Data) {
-                const value = JSON.parse(message.utf8Data);
+        const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
+            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
+                const message = iMessageProcess.message.utf8Data;
+                const value = JSON.parse(message);
                 switch (value['action']) {
                 case 'PROPOSAL':
-                    connection.send(JSON.stringify({
+                    iMessageProcess.connection.sendUTF(JSON.stringify({
                         action: 'APPROVE_PROPOSAL',
                         data: isbn,
                     }));
                     break;
                 case 'COMMITED':
-                    resolve(message.utf8Data);
+                    iMessageProcess.resolve(message);
                     return;
                 case 'USER_JOINED':
                     break;
                 default:
-                    reject(message.utf8Data);
+                    iMessageProcess.reject(message);
                     return;
                 }
             }
         };
 
-        const guestMessageProcess = (message: IMessage, connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => {
-            if (message.type === 'utf8' && message.utf8Data) {
-                const value = JSON.parse(message.utf8Data);
+        const guestMessageProcess = (iMessageProcess: IMessageProcess) => {
+            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
+                const message = iMessageProcess.message.utf8Data;
+                const value = JSON.parse(message);
 
                 switch (value['action']){
                 case 'ENTRY_PERMITTED':
-                    connection.sendUTF(JSON.stringify({
+                    iMessageProcess.connection.sendUTF(JSON.stringify({
                         action: 'REQUEST_PROPOSAL',
                         data: isbn,
                     }));
                     break;
                 case 'PROPOSAL':
-                    connection.sendUTF(JSON.stringify({
+                    iMessageProcess.connection.sendUTF(JSON.stringify({
                         action: 'APPROVE_PROPOSAL',
                     }));
 
                     break;
 
                 case 'COMMITED':
-                    resolve(message.utf8Data);
+                    iMessageProcess.resolve(message);
                     return;
                 }
 
@@ -170,7 +172,7 @@ describe('webSocket', () => {
     }
 
     function inviterConnect(
-        messageProcess: (message: IMessage, connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => void,
+        messageProcess: (iMessageProcess: IMessageProcess) => void,
         connectProcess:(connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => void)
     : Promise<string> {
         return new Promise((resolve, reject) => {
@@ -182,7 +184,14 @@ describe('webSocket', () => {
             client.on('connect', (connection: connection) => {
                 connectProcess(connection, resolve, reject);
                 connection.on('message', (message) => {
-                    messageProcess(message, connection, resolve, reject);
+                    logger.info('message');
+                    const iMessageProcess: IMessageProcess  = {
+                        message,
+                        connection,
+                        resolve,
+                        reject,
+                    };
+                    messageProcess(iMessageProcess);
                 });
                 connection.on('error', (error) => {
                     reject('Connection Error inviter: ' + error.toString());
@@ -197,7 +206,7 @@ describe('webSocket', () => {
         });
     }
 
-    function guestConnect(messageProcess: (message: IMessage, connection: connection, resolve: (value?:any) => void, reject: (reason?:any) => void) => void): Promise<string> {
+    function guestConnect(messageProcess: (iMessageProcess: IMessageProcess) => void): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
@@ -206,7 +215,13 @@ describe('webSocket', () => {
             client.on('connect', (connection: connection) => {
 
                 connection.on('message', (message) => {
-                    messageProcess(message, connection, resolve, reject);
+                    const iMessageProcess: IMessageProcess = {
+                        message,
+                        connection,
+                        resolve,
+                        reject,
+                    };
+                    messageProcess(iMessageProcess);
                 });
 
                 connection.on('error', (error) => {
