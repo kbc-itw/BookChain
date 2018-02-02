@@ -94,6 +94,11 @@ describe('webSocket', () => {
                 case 'COMMITED':
                     resolve(message.utf8Data);
                     return;
+                case 'USER_JOINED':
+                    break;
+                default:
+                    reject(message.utf8Data);
+                    return;
                 }
             }
         };
