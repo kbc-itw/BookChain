@@ -9,8 +9,8 @@ import { AuthDb, IUserAuth, Strategy } from '../auth-db';
 export function createRegisterRouter(
     registerLocalInfo:(strategy: Strategy, auth: IUserAuth) => Promise<string>,
 ): Router {
-    const userRouter = Router();
-    userRouter.post('/', isAuthenticated, async (req: Request, res: Response) => {
+    const registerRouter = Router();
+    registerRouter.post('/', isAuthenticated, async (req: Request, res: Response) => {
         const { localId, displayName } = req.body;
         let invalidFlag = false;
         const invalidRequestMessage = {
@@ -57,5 +57,5 @@ export function createRegisterRouter(
     });
 
     logger.trace('createRegisterRouter');
-    return userRouter;
+    return registerRouter;
 }
