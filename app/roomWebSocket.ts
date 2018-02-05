@@ -81,7 +81,7 @@ export function createWebSocketServer(
                             yousend: {
                                 id,
                             },
-                            message: 'room is already closed';
+                            message: 'room is already closed',
                         },
                     }));
                     socket.close();
