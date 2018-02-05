@@ -7,7 +7,7 @@ import { isAuthenticated } from '../authenticator';
 import { AuthDb, IUserAuth, Strategy } from '../auth-db';
 
 export function createRegisterRouter(
-
+    registerLocalInfo:(strategy: Strategy, auth: IUserAuth) => Promise<string>,
 ): Router {
     const userRouter = Router();
     userRouter.post('/', isAuthenticated, async (req: Request, res: Response) => {
@@ -47,10 +47,11 @@ export function createRegisterRouter(
         try {
             req.user.localId = localId;
             req.user.displayName = displayName;
-            const result = await AuthDb.registerLocalInfo(Strategy.FACEBOOK, req.user);
+            const result = await registerLocalInfo(Strategy.FACEBOOK, req.user);
             res.status(200).send();
         } catch (e) {
-            res.status(400).send('something happend');
+            logger.info('登録失敗');
+            res.status(400).send(e.toString());
         }
 
     });
