@@ -47,7 +47,7 @@ export function createRegisterRouter(
         try {
             req.user.localId = localId;
             req.user.displayName = displayName;
-            const result = await registerLocalInfo(Strategy.FACEBOOK, req.user);
+            await registerLocalInfo(Strategy.FACEBOOK, req.user);
             res.status(200).send();
         } catch (e) {
             logger.info('登録失敗');
