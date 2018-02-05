@@ -72,6 +72,21 @@ export function createWebSocketServer(
                     socket.close();
                     return;
                 }
+
+                if (room.room.closedAt) {
+                    logger.info(`既に閉じている部屋 ${id}`);
+                    await socket.send(JSON.stringify({
+                        action: 'INVALID_ACTION',
+                        data: {
+                            yousend: {
+                                id,
+                            },
+                            message: 'room is already closed';
+                        },
+                    }));
+                    socket.close();
+                    return;
+                }
             
 
                 if (role === 'inviter') {
