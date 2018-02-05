@@ -30,7 +30,7 @@ export interface IUserAuth {
 }
 
 
-enum Strategy {
+export enum Strategy {
     FACEBOOK = 'facebook',
 }
 
@@ -41,7 +41,7 @@ enum Strategy {
 export namespace AuthDb {
 
 
-    function insertWithPromise(auth: IUserAuth): Promise<string> {
+    export function insertWithPromise(auth: IUserAuth): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             authDb.insert(auth, (error, response) => {
                 if (error) resolve(response.id);
@@ -60,6 +60,36 @@ export namespace AuthDb {
         });
     }
 
+    export async function registerLocalInfo(strategy: Strategy, auth: IUserAuth): Promise<string> {
+        let query = {
+            selector: {}, 
+            fields: [''],
+        };
+        switch (strategy) {
+        case Strategy.FACEBOOK:
+            query = {
+                selector: {
+                    localId: auth.localId,
+                },
+                fields: [
+                    '_id',
+                    'auth',
+                ],
+            };
+            break;
+        default:
+            throw new Error();
+        }
+        try {
+            const response = await findWithPromise(query);
+            if (response.docs.length >= 1) {
+                throw new Error('localIdが重複');
+            }
+            return await insertWithPromise(auth);
+        } catch (e) {
+            throw e;
+        }
+    }
 
     function createFindQuery(strategy: Strategy, id: string): nano.MangoQuery {
 
