@@ -34,7 +34,7 @@ describe('registerRouter /user/register post', () => {
     });
 
     it('正常系', async () => {
-        app.use('/user/register', createRegisterRouter(async (strategy: Strategy, auth: IUserAuth) => 'Success');
+        app.use('/user/register', createRegisterRouter(async (strategy: Strategy, auth: IUserAuth) => 'Success'));
         try {
             const result = await testPost(server, '/user/register', { localId: 'hoge', displayName: 'ほげ', user:{} });
             chai.expect(result.status).to.be.equal(200);
