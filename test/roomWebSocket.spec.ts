@@ -131,8 +131,11 @@ describe('webSocket', () => {
             }
         };
 
+        const inviterConnectionProcess = (iConnectionProcess: IConnectProcess) => {};
+
+
         try {
-            const values  = await Promise.all<string, string>([inviterConnect(inviterMessageProcess),guestConnect(guestMessageProcess)]);
+            const values  = await Promise.all<string, string>([inviterConnect(inviterMessageProcess, inviterConnectionProcess),guestConnect(guestMessageProcess)]);
 
             const inviterValue = JSON.parse(values[0]);
             const guestValue = JSON.parse(values[1]);
@@ -156,7 +159,9 @@ describe('webSocket', () => {
         }
     });
 
-    it('招待者が取引相手接続待ちキャンセル', async () => {});
+    it('招待者が取引相手接続待ちキャンセル', async () => {
+
+    });
     it('取引内容設定待ちキャンセル', async () => {
         const guestMessageProcess = (iMessageProcess :IMessageProcess) => {
             if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
@@ -187,8 +192,10 @@ describe('webSocket', () => {
             }
         };
 
+        const inviterConnectionProcess = (iConnectionProcess: IConnectProcess) => {};
+
         try {
-            const value: [string] = await Promise.all([inviterConnect(inviterMessageProcess),guestConnect(guestMessageProcess)]);
+            const value: [string] = await Promise.all([inviterConnect(inviterMessageProcess,inviterConnectionProcess),guestConnect(guestMessageProcess)]);
 
             // const inviter: Map<string, string> = JSON.parse(value[0]);
             const guest: Map<string, string> = JSON.parse(value[1]);
@@ -217,7 +224,9 @@ describe('webSocket', () => {
     }
 
     function inviterConnect(
-        messageProcess: (iMessageProcess: IMessageProcess) => void): Promise<string> {
+        messageProcess: (iMessageProcess: IMessageProcess) => void,
+        connectProcess: (iConnectProcess: IConnectProcess) => void,
+    ): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
@@ -225,6 +234,13 @@ describe('webSocket', () => {
                 reject(error);
             });
             client.on('connect', (connection: connection) => {
+                const iConnectionProcess: IConnectProcess = {
+                    connection,
+                    resolve,
+                    reject,
+                };
+                connectProcess(iConnectionProcess);
+
                 connection.on('message', (message) => {
                     const iMessageProcess: IMessageProcess  = {
                         message,
@@ -283,6 +299,12 @@ describe('webSocket', () => {
 
 interface IMessageProcess {
     message: IMessage;
+    connection: connection;
+    resolve: (value?:any) => void;
+    reject: (reason?:any) => void;
+}
+
+interface IConnectProcess {
     connection: connection;
     resolve: (value?:any) => void;
     reject: (reason?:any) => void;
