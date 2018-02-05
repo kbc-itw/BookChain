@@ -78,16 +78,16 @@ export namespace AuthDb {
             };
             break;
         default:
-            return Promise.reject(new Error());
+            throw new Error();
         }
         try {
             const response = await findWithPromise(query);
             if (response.docs.length >= 1) {
-                return Promise.reject(new Error('localIdが重複'));
+                throw new Error('localIdが重複');
             }
-            return insertWithPromise(auth);
+            return await insertWithPromise(auth);
         } catch (e) {
-            return Promise.reject(e);
+            throw e;
         }
     }
 
