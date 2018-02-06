@@ -181,8 +181,10 @@ describe('webSocket', () => {
             iConnectProcess.connection.sendUTF(JSON.stringify({
                 action: 'CANCEL_REQUEST',
             }));
-            iConnectProcess.connection.close();
-            iConnectProcess.resolve('close');
+
+            iConnectProcess.connection.on('close', () => {
+                iConnectProcess.resolve('close');
+            });
         };
         const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
             if (iMessageProcess.message.type === 'utf8') iMessageProcess.reject(new Error(iMessageProcess.message.utf8Data));
