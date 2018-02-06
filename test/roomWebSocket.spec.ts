@@ -276,8 +276,8 @@ describe('webSocket', () => {
         }
 
     });
-    it('双方へ取引内容の確認', async () => {});
-    it('双方から取引内容確認待ち', async () => {});
+    it('双方へ取引内容の確認キャンセル', async () => {});
+    it('双方から取引内容検証失敗', async () => {});
 
     function getUniqueStr(): UUID {
         const uuid = uuidv4();
