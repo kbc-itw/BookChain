@@ -194,8 +194,11 @@ describe('webSocket', () => {
                 const message: string = iMessageProcess.message.utf8Data;
                 const value = JSON.parse(message);
                 switch (value['action']) {
-                default:
+                case 'INVALID_ACTION':
                     iMessageProcess.resolve(message);
+                    break;
+                default:
+                    iMessageProcess.reject(message);
                 }
             }
         };
