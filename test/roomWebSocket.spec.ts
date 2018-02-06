@@ -23,54 +23,67 @@ describe('webSocket', () => {
     const { port, host } = serverConfig;
     const uuid: UUID = getUniqueStr();
     const tokenUUID: UUID = getUniqueStr();
-    const fqdn = 'example.com';
-    const inviter = 'inviter@example.com';
-    const guest = 'guest@example.com';
-    const roomPurposeRental = 'rental';
-    const isbn = '9784274068560';
-    let socketRoom: SocketRoom;
-    const date =  new Date(2018,1,1,0,0,0,0);
-    // socketRoomのデフォルトを設定
-    if (isFQDN(fqdn) && isLocator(inviter) && isRoomPurpose(roomPurposeRental) && isLocator(guest) && isISBN(isbn)) {
-        socketRoom = {
-            isbn,
-            room: {
-                guest,
-                inviter,
-                id: uuid,
-                host: fqdn,
-                purpose: roomPurposeRental,
-                createdAt: date,
-                closedAt: undefined ,
-            },
-            inviterApproved: false,
-            guestApproved: false,
-            inviteToken: tokenUUID,
-            inviterSocket: undefined,
-            guestSocket: undefined,
-        };
-    }
+    const fqdn: string = 'example.com';
+    const inviter: string = 'inviter@example.com';
+    const guest: string = 'guest@example.com';
+    const roomPurposeRental: string = 'rental';
+    const isbn: string = '9784274068560';
+    const date: Date =  new Date(2018,1,1,0,0,0,0);
     const wsConfig = config.get<IWebSocketConfig>('webSocket');
     const wsPort = wsConfig.port;
     const wsHost = wsConfig.host;
 
+    function getSocketRoom(): SocketRoom {
+
+        if (isFQDN(fqdn) && isLocator(inviter) && isRoomPurpose(roomPurposeRental) && isLocator(guest) && isISBN(isbn)) {
+
+            return  {
+                isbn,
+                room: {
+                    guest,
+                    inviter,
+                    id: uuid,
+                    host: fqdn,
+                    purpose: roomPurposeRental,
+                    createdAt: date,
+                    closedAt: undefined,
+                },
+                inviterApproved: false,
+                guestApproved: false,
+                inviteToken: tokenUUID,
+                inviterSocket: undefined,
+                guestSocket: undefined,
+            };
+        }
+
+        throw new Error('SocketRoomがきちんと作成できない');
+    }
     beforeEach((done) => {
-        const roomMap = new Map<UUID, SocketRoom>();
-        roomMap.set(uuid, socketRoom);
-        app = express();
-        app.use(bodyParser.urlencoded({
-            extended: true,
-        }));
-        app.use(bodyParser.json());
-        server = app.listen(port, host, () => {
-            createWebSocketServer(server, '/rooms/connect', roomMap, async () => {}, async () => {
-                socketRoom.room.closedAt = date;
-            })
-                .then((result) => {
-                    wss = result;
-                    done();
-                });
-        });
+
+        try {
+            const socketRoom: SocketRoom = getSocketRoom();
+
+            const roomMap = new Map<UUID, SocketRoom>();
+            roomMap.set(uuid, socketRoom);
+            app = express();
+            app.use(bodyParser.urlencoded({
+                extended: true,
+            }));
+            app.use(bodyParser.json());
+            server = app.listen(port, host, () => {
+                createWebSocketServer(server, '/rooms/connect', roomMap, async () => {}, async () => {
+                    socketRoom.room.closedAt = date;
+                })
+                    .then((result) => {
+                        wss = result;
+                        done();
+                    });
+            });
+        } catch (e) {
+            chai.assert.fail(e);
+        }
+
+
     });
 
     afterEach((done) => {
