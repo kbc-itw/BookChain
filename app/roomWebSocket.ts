@@ -78,7 +78,7 @@ export function createWebSocketServer(
                     await socket.send(JSON.stringify({
                         action: 'INVALID_ACTION',
                         data: {
-                            yousend: {
+                            youSend: {
                                 id,
                             },
                             message: 'room is already closed',
