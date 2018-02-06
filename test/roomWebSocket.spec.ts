@@ -278,8 +278,87 @@ describe('webSocket', () => {
 
     });
 
-    it('双方へ取引内容の確認キャンセル', async () => {});
-    
+    it('双方へ取引内容の確認時にキャンセル', async () => {
+
+        const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
+            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
+                const message = iMessageProcess.message.utf8Data;
+                const value = JSON.parse(message);
+                switch (value['action']) {
+                case 'PROPOSAL':
+                    iMessageProcess.connection.sendUTF(JSON.stringify({
+                        action: 'APPROVE_PROPOSAL',
+                        data: isbn,
+                    }));
+                    break;
+                case 'TRANSACTION_CANCELED':
+                    iMessageProcess.resolve(message);
+                    return;
+                case 'USER_JOINED':
+                    break;
+                default:
+                    iMessageProcess.reject(message);
+                    return;
+                }
+            }
+        };
+
+        const guestMessageProcess = (iMessageProcess: IMessageProcess) => {
+            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
+                const message = iMessageProcess.message.utf8Data;
+                const value = JSON.parse(message);
+
+                switch (value['action']){
+                case 'ENTRY_PERMITTED':
+                    iMessageProcess.connection.sendUTF(JSON.stringify({
+                        action: 'REQUEST_PROPOSAL',
+                        data: isbn,
+                    }));
+                    break;
+                case 'PROPOSAL':
+                    iMessageProcess.connection.sendUTF(JSON.stringify({
+                        action: 'CANCEL_REQUEST',
+                    }));
+                    iMessageProcess.resolve(message);
+                    break;
+                default:
+                    iMessageProcess.reject(message);
+                }
+
+            }
+        };
+
+        const inviterConnectionProcess = (iConnectionProcess: IConnectProcess) => {};
+
+        try {
+            const values  = await Promise.all<string, string>([inviterConnect(inviterMessageProcess, inviterConnectionProcess),guestConnect(guestMessageProcess)]);
+
+            const inviterValue = JSON.parse(values[0]);
+            const guestValue = JSON.parse(values[1]);
+
+            const inviteValidate = {
+                action: 'TRANSACTION_CANCELED',
+                data: 'guest canceled transaction',
+            };
+
+            const guestValidate = {
+                action: 'PROPOSAL',
+                data: {
+                    isbn,
+                    owner: inviter,
+                    borrower: guest,
+                },
+            };
+            chai.expect(inviterValue).to.deep.equal(inviteValidate, '招待者のコミットメッセージ');
+            chai.expect(guestValue).to.deep.equal(guestValidate, 'ゲストのコミットメッセージ');
+
+        } catch (e) {
+            logger.fatal(e);
+            chai.assert.fail(e);
+        }
+
+    });
+
     it('双方から取引内容検証失敗', async () => {});
 
     function getUniqueStr(): UUID {
