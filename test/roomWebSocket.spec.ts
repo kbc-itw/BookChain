@@ -226,6 +226,7 @@ describe('webSocket', () => {
         }
 
     });
+
     it('取引内容設定待ちキャンセル', async () => {
         const guestMessageProcess = (iMessageProcess :IMessageProcess) => {
             if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
@@ -276,7 +277,9 @@ describe('webSocket', () => {
         }
 
     });
+
     it('双方へ取引内容の確認キャンセル', async () => {});
+    
     it('双方から取引内容検証失敗', async () => {});
 
     function getUniqueStr(): UUID {
