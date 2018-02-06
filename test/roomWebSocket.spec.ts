@@ -29,6 +29,7 @@ describe('webSocket', () => {
     const roomPurposeRental = 'rental';
     const isbn = '9784274068560';
     let socketRoom: SocketRoom;
+    const date =  new Date(2018,1,1,0,0,0,0);
     // socketRoomのデフォルトを設定
     if (isFQDN(fqdn) && isLocator(inviter) && isRoomPurpose(roomPurposeRental) && isLocator(guest) && isISBN(isbn)) {
         socketRoom = {
@@ -39,7 +40,7 @@ describe('webSocket', () => {
                 id: uuid,
                 host: fqdn,
                 purpose: roomPurposeRental,
-                createdAt: new Date(),
+                createdAt: date,
                 closedAt: undefined ,
             },
             inviterApproved: false,
