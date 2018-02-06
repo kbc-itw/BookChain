@@ -63,7 +63,9 @@ describe('webSocket', () => {
         }));
         app.use(bodyParser.json());
         server = app.listen(port, host, () => {
-            createWebSocketServer(server, '/rooms/connect', roomMap, async () => {}, async () => {})
+            createWebSocketServer(server, '/rooms/connect', roomMap, async () => {}, async () => {
+                socketRoom.room.closedAt = date;
+            })
                 .then((result) => {
                     wss = result;
                     done();
