@@ -164,6 +164,49 @@ describe('webSocket', () => {
 
     it('招待者が取引相手接続待ちキャンセル', async () => {
 
+        const inviterConnectProcess = (iConnectProcess: IConnectProcess) => {
+            iConnectProcess.connection.sendUTF(JSON.stringify({
+                action: 'CANCEL_REQUEST',
+            }));
+            iConnectProcess.connection.close();
+            iConnectProcess.resolve('close');
+        };
+        const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
+            if (iMessageProcess.message.type === 'utf8') iMessageProcess.reject(new Error(iMessageProcess.message.utf8Data));
+        };
+        const guestMessageProcess = (iMessageProcess: IMessageProcess) => {
+            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
+                const message: string = iMessageProcess.message.utf8Data;
+                const value = JSON.parse(message);
+                switch (value['action']) {
+                default:
+                    iMessageProcess.resolve(message);
+                }
+            }
+        };
+
+        try {
+
+            const inviteString: string = await inviterConnect(inviterMessageProcess, inviterConnectProcess);
+            const guestString: string = await guestConnect(guestMessageProcess);
+
+            const guestValue = JSON.parse(guestString);
+            const validate = {
+                action:'INVALID_ACTION',
+                data: {
+                    youSend: {
+                        id: uuid,
+                    },
+                    message: 'room is already closed',
+                },
+            };
+            chai.expect(inviteString).to.eq('close', '招待者の戻り値チェック');
+            chai.expect(guestValue).to.deep.equal(validate, 'ゲストの戻り値チェック');
+        }catch (e) {
+            logger.fatal(e);
+            chai.assert.fail(e);
+        }
+
     });
     it('取引内容設定待ちキャンセル', async () => {
         const guestMessageProcess = (iMessageProcess :IMessageProcess) => {
