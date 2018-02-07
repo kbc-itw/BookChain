@@ -73,6 +73,7 @@ describe('webSocket', () => {
             server = app.listen(port, host, () => {
                 createWebSocketServer(server, '/rooms/connect', roomMap, async () => {}, async () => {
                     socketRoom.room.closedAt = date;
+
                 })
                     .then((result) => {
                         wss = result;
@@ -359,7 +360,7 @@ describe('webSocket', () => {
 
     });
 
-    it('双方から取引内容検証失敗', async () => {});
+    it('取引内容確定失敗', async () => {});
 
     function getUniqueStr(): UUID {
         const uuid = uuidv4();
