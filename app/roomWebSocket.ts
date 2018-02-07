@@ -298,7 +298,6 @@ async function commitment(room: SocketRoom, queryFunction: (request: ChaincodeQu
             returnedAt: trading.returnedAt,
         },
     };
-    commitRental(room, room.isbn, invokeFunction);
     if (room.inviterSocket) {
         await room.inviterSocket.send(JSON.stringify(commitment));
     }
@@ -362,19 +361,6 @@ interface ValidateObject {
     readonly locator: Locator;
     readonly role: RoleString;
     readonly inviteToken: UUID;
-}
-
-async function commitRental(room: SocketRoom, isbn: string, invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>): Promise<void> {
-    try {
-        await invokeFunction({
-            ...invokeRentalBase,
-            fcn: 'createTrading',
-            args:[uuidv4(), room.room.inviter, room.room.guest, isbn, new Date().toISOString()],
-        });
-    } catch (e) {
-        logger.error(e);
-        throw e;
-    }
 }
 
 const invokeBase = {
