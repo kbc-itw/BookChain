@@ -98,61 +98,60 @@ describe('webSocket', () => {
     it('借りる', async () => {
         // webSocketClientの立ち上げ
 
-        const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
-            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
-                const message = iMessageProcess.message.utf8Data;
-                const value = JSON.parse(message);
-                switch (value['action']) {
-                case 'PROPOSAL':
-                    iMessageProcess.connection.sendUTF(JSON.stringify({
-                        action: 'APPROVE_PROPOSAL',
-                        data: isbn,
-                    }));
-                    break;
-                case 'COMMITED':
-                    iMessageProcess.resolve(message);
-                    return;
-                case 'USER_JOINED':
-                    break;
-                default:
-                    iMessageProcess.reject(message);
-                    return;
+        const inviterConnectProcess = (iConnectProcess: IConnectProcess) => {
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
+                    switch (value['action']) {
+                    case 'PROPOSAL':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'APPROVE_PROPOSAL',
+                            data: isbn,
+                        }));
+                        break;
+                    case 'COMMITED':
+                        iConnectProcess.resolve(message.utf8Data);
+                        return;
+                    case 'USER_JOINED':
+                        break;
+                    default:
+                        iConnectProcess.reject(message.utf8Data);
+                        return;
+                    }
                 }
-            }
+            });
         };
 
-        const guestMessageProcess = (iMessageProcess: IMessageProcess) => {
-            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
-                const message = iMessageProcess.message.utf8Data;
-                const value = JSON.parse(message);
+        const guestConnectProcess = (iConnectProcess: IConnectProcess) => {
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
 
-                switch (value['action']){
-                case 'ENTRY_PERMITTED':
-                    iMessageProcess.connection.sendUTF(JSON.stringify({
-                        action: 'REQUEST_PROPOSAL',
-                        data: isbn,
-                    }));
-                    break;
-                case 'PROPOSAL':
-                    iMessageProcess.connection.sendUTF(JSON.stringify({
-                        action: 'APPROVE_PROPOSAL',
-                    }));
+                    switch (value['action']){
+                    case 'ENTRY_PERMITTED':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'REQUEST_PROPOSAL',
+                            data: isbn,
+                        }));
+                        break;
+                    case 'PROPOSAL':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'APPROVE_PROPOSAL',
+                        }));
 
-                    break;
+                        break;
 
-                case 'COMMITED':
-                    iMessageProcess.resolve(message);
-                    return;
+                    case 'COMMITED':
+                        iConnectProcess.resolve(message.utf8Data);
+                        return;
+                    }
+
                 }
-
-            }
+            });
         };
-
-        const inviterConnectionProcess = (iConnectionProcess: IConnectProcess) => {};
-
 
         try {
-            const values  = await Promise.all<string, string>([inviterConnect(inviterMessageProcess, inviterConnectionProcess),guestConnect(guestMessageProcess)]);
+            const values  = await Promise.all<string, string>([inviterConnect(inviterConnectProcess),guestConnect(guestConnectProcess)]);
 
             const inviterValue = JSON.parse(values[0]);
             const guestValue = JSON.parse(values[1]);
@@ -183,31 +182,34 @@ describe('webSocket', () => {
                 action: 'CANCEL_REQUEST',
             }));
 
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8') iConnectProcess.reject(new Error(message.utf8Data));
+            });
+
             iConnectProcess.connection.on('close', () => {
                 iConnectProcess.resolve('close');
             });
         };
-        const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
-            if (iMessageProcess.message.type === 'utf8') iMessageProcess.reject(new Error(iMessageProcess.message.utf8Data));
-        };
-        const guestMessageProcess = (iMessageProcess: IMessageProcess) => {
-            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
-                const message: string = iMessageProcess.message.utf8Data;
-                const value = JSON.parse(message);
-                switch (value['action']) {
-                case 'INVALID_ACTION':
-                    iMessageProcess.resolve(message);
-                    break;
-                default:
-                    iMessageProcess.reject(message);
+
+        const guestConnectProcess = (iConnectProcess: IConnectProcess) => {
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
+                    switch (value['action']) {
+                    case 'INVALID_ACTION':
+                        iConnectProcess.resolve(message.utf8Data);
+                        break;
+                    default:
+                        iConnectProcess.reject(message.utf8Data);
+                    }
                 }
-            }
+            });
         };
 
         try {
 
-            const inviteString: string = await inviterConnect(inviterMessageProcess, inviterConnectProcess);
-            const guestString: string = await guestConnect(guestMessageProcess);
+            const inviteString: string = await inviterConnect(inviterConnectProcess);
+            const guestString: string = await guestConnect(guestConnectProcess);
 
             const guestValue = JSON.parse(guestString);
             const validate = {
@@ -229,39 +231,42 @@ describe('webSocket', () => {
     });
 
     it('取引内容設定待ちキャンセル', async () => {
-        const guestMessageProcess = (iMessageProcess :IMessageProcess) => {
-            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
-                const message: string = iMessageProcess.message.utf8Data;
-                const value = JSON.parse(message);
-                switch (value['action']) {
-                case 'TRANSACTION_CANCELED':
-                    iMessageProcess.resolve(message);
-                    return;
-                case 'USER_JOINED':
-                case 'ENTRY_PERMITTED':
-                    break;
-                default:
-                    iMessageProcess.reject(message);
-                    return;
+
+        const guestConnectProcess = (iConnectProcess :IConnectProcess) => {
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
+                    switch (value['action']) {
+                    case 'TRANSACTION_CANCELED':
+                        iConnectProcess.resolve(message.utf8Data);
+                        return;
+                    case 'USER_JOINED':
+                    case 'ENTRY_PERMITTED':
+                        break;
+                    default:
+                        iConnectProcess.reject(message.utf8Data);
+                        return;
+                    }
                 }
-            }
+            });
         };
 
-        const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
-            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
-                const value = JSON.parse(iMessageProcess.message.utf8Data);
-                switch (value['action']) {
-                case 'USER_JOINED':
-                    iMessageProcess.connection.sendUTF(JSON.stringify({ action: 'CANCEL_REQUEST' }));
-                    iMessageProcess.resolve(iMessageProcess.message.utf8Data);
+        const inviterConnectProcess = (iConnectProcess: IConnectProcess) => {
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
+                    switch (value['action']) {
+                    case 'USER_JOINED':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({ action: 'CANCEL_REQUEST' }));
+                        iConnectProcess.resolve(message.utf8Data);
+                    }
                 }
-            }
-        };
+            });
 
-        const inviterConnectionProcess = (iConnectionProcess: IConnectProcess) => {};
+        };
 
         try {
-            const value: [string] = await Promise.all([inviterConnect(inviterMessageProcess,inviterConnectionProcess),guestConnect(guestMessageProcess)]);
+            const value: [string] = await Promise.all([inviterConnect(inviterConnectProcess),guestConnect(guestConnectProcess)]);
 
             // const inviter: Map<string, string> = JSON.parse(value[0]);
             const guest: Map<string, string> = JSON.parse(value[1]);
@@ -281,58 +286,59 @@ describe('webSocket', () => {
 
     it('双方へ取引内容の確認時にキャンセル', async () => {
 
-        const inviterMessageProcess = (iMessageProcess: IMessageProcess) => {
-            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
-                const message = iMessageProcess.message.utf8Data;
-                const value = JSON.parse(message);
-                switch (value['action']) {
-                case 'PROPOSAL':
-                    iMessageProcess.connection.sendUTF(JSON.stringify({
-                        action: 'APPROVE_PROPOSAL',
-                        data: isbn,
-                    }));
-                    break;
-                case 'TRANSACTION_CANCELED':
-                    iMessageProcess.resolve(message);
-                    return;
-                case 'USER_JOINED':
-                    break;
-                default:
-                    iMessageProcess.reject(message);
-                    return;
+        const inviterConnectProcess = (iConnectProcess: IConnectProcess) => {
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
+                    switch (value['action']) {
+                    case 'PROPOSAL':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'APPROVE_PROPOSAL',
+                            data: isbn,
+                        }));
+                        break;
+                    case 'TRANSACTION_CANCELED':
+                        iConnectProcess.resolve(message.utf8Data);
+                        return;
+                    case 'USER_JOINED':
+                        break;
+                    default:
+                        iConnectProcess.reject(message.utf8Data);
+                        return;
+                    }
                 }
-            }
+            });
         };
 
-        const guestMessageProcess = (iMessageProcess: IMessageProcess) => {
-            if (iMessageProcess.message.type === 'utf8' && iMessageProcess.message.utf8Data) {
-                const message = iMessageProcess.message.utf8Data;
-                const value = JSON.parse(message);
+        const guestConnectProcess = (iConnectProcess: IConnectProcess) => {
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
 
-                switch (value['action']){
-                case 'ENTRY_PERMITTED':
-                    iMessageProcess.connection.sendUTF(JSON.stringify({
-                        action: 'REQUEST_PROPOSAL',
-                        data: isbn,
-                    }));
-                    break;
-                case 'PROPOSAL':
-                    iMessageProcess.connection.sendUTF(JSON.stringify({
-                        action: 'CANCEL_REQUEST',
-                    }));
-                    iMessageProcess.resolve(message);
-                    break;
-                default:
-                    iMessageProcess.reject(message);
+                    switch (value['action']){
+                    case 'ENTRY_PERMITTED':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'REQUEST_PROPOSAL',
+                            data: isbn,
+                        }));
+                        break;
+                    case 'PROPOSAL':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'CANCEL_REQUEST',
+                        }));
+                        iConnectProcess.resolve(message.utf8Data);
+                        break;
+                    default:
+                        iConnectProcess.reject(message.utf8Data);
+                    }
+
                 }
+            });
 
-            }
         };
-
-        const inviterConnectionProcess = (iConnectionProcess: IConnectProcess) => {};
 
         try {
-            const values  = await Promise.all<string, string>([inviterConnect(inviterMessageProcess, inviterConnectionProcess),guestConnect(guestMessageProcess)]);
+            const values  = await Promise.all<string, string>([inviterConnect(inviterConnectProcess),guestConnect(guestConnectProcess)]);
 
             const inviterValue = JSON.parse(values[0]);
             const guestValue = JSON.parse(values[1]);
@@ -371,7 +377,6 @@ describe('webSocket', () => {
     }
 
     function inviterConnect(
-        messageProcess: (iMessageProcess: IMessageProcess) => void,
         connectProcess: (iConnectProcess: IConnectProcess) => void,
     ): Promise<string> {
         return new Promise((resolve, reject) => {
@@ -388,15 +393,6 @@ describe('webSocket', () => {
                 };
                 connectProcess(iConnectionProcess);
 
-                connection.on('message', (message) => {
-                    const iMessageProcess: IMessageProcess  = {
-                        message,
-                        connection,
-                        resolve,
-                        reject,
-                    };
-                    messageProcess(iMessageProcess);
-                });
                 connection.on('error', (error) => {
                     reject('Connection Error inviter: ' + error.toString());
                 });
@@ -410,24 +406,19 @@ describe('webSocket', () => {
         });
     }
 
-    function guestConnect(messageProcess: (iMessageProcess: IMessageProcess) => void): Promise<string> {
+    function guestConnect(connectProcess: (iConnectProcess: IConnectProcess) => void): Promise<string> {
         return new Promise((resolve, reject) => {
             const client = new Client();
             client.on('connectFailed', (error: Error) => {
                 reject('Connect Error guest: ' + error.toString());
             });
             client.on('connect', (connection: connection) => {
-
-                connection.on('message', (message) => {
-                    const iMessageProcess: IMessageProcess = {
-                        message,
-                        connection,
-                        resolve,
-                        reject,
-                    };
-                    messageProcess(iMessageProcess);
-                });
-
+                const iConnectProcess:IConnectProcess = {
+                    connection,
+                    resolve,
+                    reject,
+                };
+                connectProcess(iConnectProcess);
                 connection.on('error', (error) => {
                     reject('Connection Error guest: ' + error.toString());
                 });
@@ -443,13 +434,6 @@ describe('webSocket', () => {
 
 
 });
-
-interface IMessageProcess {
-    message: IMessage;
-    connection: connection;
-    resolve: (value?:any) => void;
-    reject: (reason?:any) => void;
-}
 
 interface IConnectProcess {
     connection: connection;
