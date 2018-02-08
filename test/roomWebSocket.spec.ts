@@ -372,7 +372,92 @@ describe('webSocket', () => {
 
     });
 
-    it('取引内容確定失敗', async () => {});
+    it('取引内容確定失敗', async () => {
+
+        createTradingFail = true;
+        let inviteFail: boolean = false;
+        let guestFail: boolean = false;
+
+        const inviterConnectProcess = (iConnectProcess: IConnectProcess) => {
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
+                    switch (value['action']) {
+                    case 'PROPOSAL':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'APPROVE_PROPOSAL',
+                            data: isbn,
+                        }));
+                        inviteFail = true;
+                        break;
+                    case 'USER_JOINED':
+                        break;
+                    case 'TRANSACTION_CANCELED':
+                        iConnectProcess.resolve(message.utf8Data);
+                        return;
+                    default:
+                        iConnectProcess.reject(message.utf8Data);
+                        return;
+                    }
+                }
+            });
+
+            
+            iConnectProcess.connection.on('close', () => {
+                iConnectProcess.resolve(true);
+            });
+
+        };
+
+        const guestConnectProcess = (iConnectProcess: IConnectProcess) => {
+
+            iConnectProcess.connection.on('message', (message) => {
+                if (message.type === 'utf8' && message.utf8Data) {
+                    const value = JSON.parse(message.utf8Data);
+
+                    logger.info(message.utf8Data);
+
+                    switch (value['action']){
+                    case 'ENTRY_PERMITTED':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'REQUEST_PROPOSAL',
+                            data: isbn,
+                        }));
+                        break;
+                    case 'PROPOSAL':
+                        iConnectProcess.connection.sendUTF(JSON.stringify({
+                            action: 'APPROVE_PROPOSAL',
+                            data: isbn,
+                        }));
+                        guestFail = true;
+                        break;
+                    default:
+                        iConnectProcess.reject(message.utf8Data);
+                    }
+
+                }
+            });
+
+            iConnectProcess.connection.on('close', () => {
+                iConnectProcess.resolve(`${guestFail}`);
+            });
+
+        };
+
+        try {
+            const values  = await Promise.all<string, string>([inviterConnect(inviterConnectProcess),guestConnect(guestConnectProcess)]);
+
+            const inviterValue = JSON.parse(values[0]);
+            const guestValue = JSON.parse(values[1]);
+
+            chai.expect(inviterValue).to.deep.equal(true, '招待者の結果');
+            chai.expect(guestValue).to.deep.equal(true, 'ゲストの結果');
+
+        } catch (e) {
+            logger.fatal(e);
+            chai.assert.fail(e);
+        }
+    });
 
     function getUniqueStr(): UUID {
         const uuid = uuidv4();
