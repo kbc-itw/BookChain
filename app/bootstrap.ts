@@ -28,6 +28,7 @@ export function bootstrap():express.Application {
 }
 
 function configureRoute(app: express.Application) {
+    app.use('/client', express.static('/opt/BookChain-Client/dist'));
     //    app.use('/user', createUserRouter(chainCodeQuery, chainCodeInvoke));
 }
 
