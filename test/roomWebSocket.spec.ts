@@ -32,6 +32,7 @@ describe('webSocket', () => {
     const wsConfig = config.get<IWebSocketConfig>('webSocket');
     const wsPort = wsConfig.port;
     const wsHost = wsConfig.host;
+    let createTradingFail: boolean = false;
 
     function getSocketRoom(): SocketRoom {
 
@@ -71,9 +72,14 @@ describe('webSocket', () => {
             }));
             app.use(bodyParser.json());
             server = app.listen(port, host, () => {
-                createWebSocketServer(server, '/rooms/connect', roomMap, async () => {}, async () => {
+                createWebSocketServer(server, '/rooms/connect', roomMap, async () => {}, async (query) => {
                     socketRoom.room.closedAt = date;
+                    switch (query.fcn) {
+                        case 'createTrading':
+                            if (createTradingFail) throw new Error('commitがエラー');
+                        default:
 
+                    }
                 })
                     .then((result) => {
                         wss = result;
