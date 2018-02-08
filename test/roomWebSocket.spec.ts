@@ -457,8 +457,6 @@ describe('webSocket', () => {
                 if (message.type === 'utf8' && message.utf8Data) {
                     const value = JSON.parse(message.utf8Data);
 
-                    logger.info(message.utf8Data);
-
                     switch (value['action']){
                     case 'ENTRY_PERMITTED':
                         iConnectProcess.connection.sendUTF(JSON.stringify({
