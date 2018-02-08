@@ -182,6 +182,47 @@ describe('webSocket', () => {
         }
     });
 
+    it('不正パラメタ', async () => {
+
+        function validateCheck(id: any, locator: any, role: any, inviteToken: any): Map<string, string> {
+            return validate({ id, locator, role, inviteToken });
+        }
+
+        const allOk = validateCheck(uuid, inviter, 'inviter', uuid);
+
+        const allFail = validateCheck('fail', 'fail', 'fail', 'fail');
+        const validateAllFail = new Map([
+            ['id', ErrorMessages.MESSAGE_UUID_INVALID],
+            ['locator', ErrorMessages.MESSAGE_LOCATOR_INVALID],
+            ['role', ErrorMessages.MESSAGE_ROLE_INVALID],
+            ['inviteToken', ErrorMessages.MESSAGE_UUID_INVALID],
+        ]);
+
+        const allUndefined = validateCheck(undefined, undefined, undefined, undefined);
+        const validateAllUndefined = new Map([
+            ['id', ErrorMessages.MESSAGE_UUID_INVALID],
+            ['locator', ErrorMessages.MESSAGE_LOCATOR_REQUIRED],
+            ['role', ErrorMessages.MESSAGE_ROLE_REQUIRED],
+        ]);
+
+        const inviteToken = validateCheck(uuid, guest, 'guest', undefined);
+        const validateInviterToken = new Map([['inviteToken', ErrorMessages.MESSAGE_INVITETOKEN_REQUIRED]]);
+
+
+        try {
+
+            chai.expect(allFail).to.deep.equal(validateAllFail, 'すべて不正パラメタ');
+            chai.expect(allOk).to.deep.equal(new Map(), '正しいパラメータ');
+            chai.expect(allUndefined).to.deep.equal(validateAllUndefined, 'すべてUndefined');
+            chai.expect(inviteToken).to.deep.equal(validateInviterToken, 'ゲストでトークンIDを持っていない');
+
+        } catch (e) {
+            logger.fatal(e);
+            chai.assert.fail(e);
+        }
+
+    });
+
     it('招待者が取引相手接続待ちキャンセル', async () => {
 
         const inviterConnectProcess = (iConnectProcess: IConnectProcess) => {
@@ -397,7 +438,7 @@ describe('webSocket', () => {
                         iConnectProcess.resolve(message.utf8Data);
                         return;
                     default:
-                        iConnectProcess.reject(message.utf8Data);
+                        iConnectProcess.reject('inviter' + message.utf8Data);
                         return;
                     }
                 }
@@ -433,7 +474,7 @@ describe('webSocket', () => {
                         guestFail = true;
                         break;
                     default:
-                        iConnectProcess.reject(message.utf8Data);
+                        iConnectProcess.reject('guest' + message.utf8Data);
                     }
 
                 }
