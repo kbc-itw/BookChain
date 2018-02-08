@@ -8,9 +8,10 @@ import * as http from 'http';
 import * as ws from 'ws';
 import { IWebSocketConfig } from '../app/config/IWSConfig';
 import * as bodyParser from 'body-parser';
-import { createWebSocketServer, SocketRoom } from '../app/roomWebSocket';
+import { createWebSocketServer, SocketRoom , validate } from '../app/roomWebSocket';
 import { connection, client as Client, IMessage } from 'websocket';
 import { logger } from '../app/logger';
+import { ErrorMessages } from '../app/messages';
 
 const uuidv4 = require('uuid/v4');
 chai.use(require('chai-as-promised'));
