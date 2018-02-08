@@ -23,7 +23,16 @@ export function createUserRouter(
             res.status(500).json({ error: true });
         }
     });
-        
+
+    userRouter.get('/login', isAuthenticated, async(req, res) => {
+        if (req.user && req.user.localId && req.user.displayName) {
+            res.status(200).send({ localId: req.user.localId, displayName: req.user.displayName });
+        } else {
+            res.send(401).send({ error: true });
+        }
+    });
+    
+
     userRouter.get('/:host/:id', isAuthenticated, async (req, res) => {
         const { host, id } = req.params;
         let invalidFlag = false;
