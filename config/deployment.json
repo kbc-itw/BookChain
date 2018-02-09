@@ -1,10 +1,10 @@
 {
     "server": {
-        "host": "hoge",
+        "host": "localhost",
         "port": 80
     },
     "webSocket": {
-        "host": "hoge",
+        "host": "localhost",
         "port": 8080
     },
     "log4js": {
