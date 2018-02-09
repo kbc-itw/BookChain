@@ -12,10 +12,16 @@ export function createUserRouter(
     const userRouter = Router();
     userRouter.get('/', isAuthenticated, async (req: Request, res: Response) => {
         try {
+            const host = req.query.host || '';
+            const id = req.query.id || '';
+            const name = req.query.name || '';
+            const limit = req.query.limit || '';
+            const offset = req.query.limit || '';
+
             const result = await queryFunction({
                 ...queryBase,
                 fcn:'getUsersList',
-                args: [],
+                args: [host, id, name, limit, offset],
             });
             res.json(result);
         } catch (e) {

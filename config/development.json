@@ -4,7 +4,7 @@
         "port": 3000
     },
     "webSocket": {
-        "host": "hoge",
+        "host": "localhost",
         "port": 3001
     },
     "log4js": {
