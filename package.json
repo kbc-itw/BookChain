@@ -8,8 +8,8 @@
     "test:watch": "export NODE_ENV=test | mocha --recursive --require ts-node/register \"test/**/*.ts\" --watch --watch-extensions ts",
     "cover": "export NODE_ENV=test | nyc npm t NODE_ENV=development",
     "build": "tsc",
-    "start": "SET NODE_ENV=deployment | node index.js",
-    "start:development": "SET NODE_ENV=development | ts-node index.ts"
+    "start": "export NODE_ENV=deployment | node index.js",
+    "start:development": "export NODE_ENV=development | ts-node index.ts"
   },
   "repository": {
     "type": "git",
