@@ -10,6 +10,13 @@ import * as bodyParser from 'body-parser';
 import { passport, isAuthenticated } from './authenticator';
 import { Request, Response } from 'express-serve-static-core';
 import { createAuthenticationRouter } from './router/authenticate';
+import { createRegisterRouter } from './router/register';
+import { Strategy, AuthDb } from './auth-db';
+import { createTradingsRouter } from './router/tradings';
+import { createOwnershipRouter } from './router/ownership';
+import { createRoomsRouter } from './router/rooms';
+import { createWebSocketServer, SocketRoom } from './roomWebSocket';
+import { UUID } from './util';
 
 
 const secret = require('../config/secrets.json') as ISecrets;
@@ -19,16 +26,21 @@ const secret = require('../config/secrets.json') as ISecrets;
  * 呼び出しごとに別のアプリケーションを生成することに注意。
  * @author kbc14a12
  */
-export function bootstrap():express.Application {
+export function bootstrap(map: Map<UUID, SocketRoom>):express.Application {
     const app = express();
     configureUse(app);
-    configureRoute(app);
+    configureRoute(app, map);
     logger.trace('bootstrap完了');
     return app;
 }
 
-function configureRoute(app: express.Application) {
-    //    app.use('/user', createUserRouter(chainCodeQuery, chainCodeInvoke));
+function configureRoute(app: express.Application, map: Map<UUID, SocketRoom>) {
+    app.use('/user', createUserRouter(chainCodeQuery, chainCodeInvoke));
+    app.use('/user/register', createRegisterRouter(AuthDb.registerLocalInfo));
+    app.use('/auth', createAuthenticationRouter);
+    app.use('/trading', createTradingsRouter(chainCodeQuery, chainCodeInvoke));
+    app.use('/ownership', createOwnershipRouter(chainCodeQuery, chainCodeInvoke));
+    app.use('/rooms', createRoomsRouter(map, chainCodeQuery, chainCodeInvoke));
 }
 
 export function configureUse(app: express.Application) {
