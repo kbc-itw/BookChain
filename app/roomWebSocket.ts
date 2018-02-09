@@ -326,7 +326,7 @@ async function closeRoom(room: SocketRoom, invokeFunction: (request: ChaincodeIn
     }
 }
 
-function validate(validateObject: ValidateObject):Map<string, string> {
+export function validate(validateObject: ValidateObject):Map<string, string> {
     const errorMessages = new Map<string, string>();
 
     if (validateObject.id && !isUUID(validateObject.id)) {
