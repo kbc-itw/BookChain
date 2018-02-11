@@ -4,12 +4,12 @@
   "description": "図書貸し借りシステム",
   "main": "index.js",
   "scripts": {
-    "test": "export NODE_ENV=test | mocha --recursive --require ts-node/register \"test/**/*.ts\"",
-    "test:watch": "export NODE_ENV=test | mocha --recursive --require ts-node/register \"test/**/*.ts\" --watch --watch-extensions ts",
-    "cover": "export NODE_ENV=test | nyc npm t NODE_ENV=development",
+    "test": "NODE_ENV=test mocha --recursive --require ts-node/register \"test/**/*.ts\"",
+    "test:watch": "NODE_ENV=test mocha --recursive --require ts-node/register \"test/**/*.ts\" --watch --watch-extensions ts",
+    "cover": "NODE_ENV=test nyc npm t NODE_ENV=development",
     "build": "tsc",
-    "start": "export NODE_ENV=deployment | node index.js",
-    "start:development": "export NODE_ENV=development | ts-node index.ts"
+    "start": "NODE_ENV=production node index.js",
+    "start:development": "NODE_ENV=development ts-node index.ts"
   },
   "repository": {
     "type": "git",
