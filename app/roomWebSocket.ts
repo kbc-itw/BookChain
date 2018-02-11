@@ -10,6 +10,7 @@ import { ErrorMessages } from './messages';
 import { ISBN } from 'isbn-utils';
 import * as config from 'config';
 import { IServerConfig } from './config/IServerConfig';
+import { unescape } from 'querystring';
 
 const uuidv4 = require('uuid/v4');
 
@@ -34,7 +35,9 @@ export function createWebSocketServer(
                 }
             
                 const parsedURL = url.parse(req.url, true);
-                const { id, locator, role, inviteToken } = parsedURL.query;
+                const locatorString = unescape(parsedURL.query.locator);
+                const locator = locatorString as Locator;
+                const { id, role, inviteToken } = parsedURL.query;
                 const invalidField = validate({ id, locator, role, inviteToken });
 
                 if (invalidField.size > 0) {

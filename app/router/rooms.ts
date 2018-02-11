@@ -6,6 +6,7 @@ import { IServerConfig } from '../config/IServerConfig';
 import * as config from 'config';
 import { isAuthenticated } from '../authenticator';
 import { SocketRoom } from '../roomWebSocket';
+import { unescape } from 'querystring';
 
 const uuidv4 = require('uuid/v4');
 
@@ -17,7 +18,8 @@ export function createRoomsRouter(
     const router = Router();
 
     router.post('/', isAuthenticated, async(req: Request, res: Response) => {
-        const { purpose, inviter } = req.query;
+        const purpose = req.query.purpose;
+        const inviter = unescape(req.query.inviter);
         const serverConfig = config.get<IServerConfig>('server');
         let invalidFlag = false;
         const invalidRequestMessage = {

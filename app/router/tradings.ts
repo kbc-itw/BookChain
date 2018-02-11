@@ -1,8 +1,9 @@
 import { Router, Response, Request } from 'express';
-import { isLocator, isISBN, isBooleanString, isUUID } from '../util';
+import { isLocator, isISBN, isBooleanString, isUUID, Locator } from '../util';
 import { logger } from '../logger';
 import { ErrorMessages } from '../messages';
 import { isAuthenticated } from '../authenticator';
+import { unescape } from 'querystring';
 
 
 
@@ -13,7 +14,9 @@ export function createTradingsRouter(
     const router = Router();
 
     router.get('/', isAuthenticated, async (req: Request, res: Response) => {
-        let { owner, borrower, isbn, isreturned, limit, offset } = req.query;
+        let {borrower, isbn, isreturned, limit, offset } = req.query;
+        const ownerString = unescape(req.query.owner);
+        let owner = ownerString as Locator;
         let invalidFlag = false;
         const invalidRequestMessage = {
             owner: '',
