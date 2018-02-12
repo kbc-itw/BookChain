@@ -25,42 +25,48 @@
             "default": {
                 "appenders": [
                     "log",
-                    "console"
+                    "console",
+                    "stdout"
                 ],
                 "level": "INFO"
             },
             "trace": {
                 "appenders": [
                     "console",
-                    "log"
+                    "log",
+                    "stdout"
                 ],
                 "level": "TRACE"
             },
             "info": {
                 "appenders": [
                     "log",
-                    "console"
+                    "console",
+                    "stdout"
                 ],
                 "level": "INFO"
             },
             "warn": {
                 "appenders": [
                     "log",
-                    "console"
+                    "console",
+                    "stdout"
                 ],
                 "level": "WARN"
             },
             "error": {
                 "appenders": [
                     "log",
-                    "console"
+                    "console",
+                    "stdout"
                 ],
                 "level": "ERROR"
             },
             "fatal": {
                 "appenders": [
                     "log",
-                    "console"
+                    "console",
+                    "stdout"
                 ],
                 "level": "FATAL"
             }
