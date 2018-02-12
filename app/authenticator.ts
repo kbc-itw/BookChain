@@ -13,7 +13,7 @@ const domain = config.get<string>('domain');
 const secrets = require('../config/secrets.json') as ISecrets;
 
 const localStrategy = new LocalStrategy((username, password, done) => {
-    if (process.env.NODE_ENV === 'deployment') {
+    if (process.env.NODE_ENV === 'production') {
         done(true);
     } else {
         done(false, { username, password });
@@ -53,7 +53,7 @@ passport.use(localStrategy);
 passport.use(facebookStrategy);
 
 export function isAuthenticated(req:Request, res:Response, next:NextFunction): void {
-    if (process.env.NODE_ENV !== 'deployment' || req.isAuthenticated()) {
+    if (process.env.NODE_ENV !== 'production' || req.isAuthenticated()) {
         if (req.user && (!req.user.localId || !req.user.displayName)) {
             res.redirect('/client/user/register');
         }
