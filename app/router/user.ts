@@ -30,7 +30,7 @@ export function createUserRouter(
         }
     });
 
-    userRouter.get('/login', isAuthenticated, async(req, res) => {
+    userRouter.get('/login', async(req, res) => {
         if (req.user && req.user.localId && req.user.displayName) {
             res.status(200).send({ localId: req.user.localId, displayName: req.user.displayName });
         } else {
