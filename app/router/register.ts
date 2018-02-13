@@ -5,8 +5,13 @@ import { logger } from '../logger';
 import { ErrorMessages } from '../messages';
 import { isAuthenticated } from '../authenticator';
 import { AuthDb, IUserAuth, Strategy } from '../auth-db';
+import * as config from 'config';
+import { IServerConfig } from '../config/IServerConfig';
+
+const host = config.get<IServerConfig>('server').host;
 
 export function createRegisterRouter(
+    invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
     registerLocalInfo:(strategy: Strategy, auth: IUserAuth) => Promise<string>,
 ): Router {
     const registerRouter = Router();
@@ -48,6 +53,11 @@ export function createRegisterRouter(
             req.user.localId = localId;
             req.user.displayName = displayName;
             await registerLocalInfo(Strategy.FACEBOOK, req.user);
+            await invokeFunction({
+                ...queryBase,
+                fcn: 'createUser',
+                args:[localId, host, displayName],
+            });
             res.status(200).send();
         } catch (e) {
             logger.info('登録失敗');
@@ -59,3 +69,11 @@ export function createRegisterRouter(
     logger.trace('createRegisterRouter');
     return registerRouter;
 }
+
+const queryBase = {
+    chaincodeId:'user',
+    // TODO transactionIDは不要であるはずだ
+    txId: {
+        getTransactionID(): string {throw new Error('呼ばれないはずだ'); },
+    },
+};
