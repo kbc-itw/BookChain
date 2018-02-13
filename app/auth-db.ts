@@ -22,10 +22,12 @@ const authDb = nano(`http://${USER_NAME}:${USER_PASSWORD}@${HOST}:${PORT}/${AUTH
 export interface IUserAuth {
     localId?: LocalID;
     displayName?: DisplayName;
-    facebook: {
-        accessToken: string;
-        refreshToken: string;
-        profile: FacebookProfile;
+    auth: {
+        facebook: {
+            accessToken: string;
+            refreshToken: string;
+            profile: FacebookProfile;
+        };
     };
 }
 
@@ -41,51 +43,55 @@ export enum Strategy {
 export namespace AuthDb {
 
 
-    export function insertWithPromise(auth: IUserAuth): Promise<string> {
+    export function insertWithPromise(auth: IUserAuth, id?: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            authDb.insert(auth, (error, response) => {
-                if (error) resolve(response.id);
-                else reject(error);
-            });
+
+            const handleResponse = (error: Error, response: nano.DocumentInsertResponse) => {
+                if (error) reject(error);
+                else resolve(response.id);
+            };
+
+            if (id) {
+                authDb.insert(auth, id, handleResponse);
+            } else {
+                authDb.insert(auth, handleResponse);
+            }
+
         });
     }
 
 
     function findWithPromise(query: nano.MangoQuery): Promise<nano.MangoResponse<IUserAuth>> {
         return new Promise<nano.MangoResponse<IUserAuth>>((resolve, reject) => {
-            authDb.find(query, (err, response) => {
-                if (err) reject(err);
+            authDb.find(query, (error, response) => {
+                if (error) reject(error);
                 else resolve(response);
             });
         });
     }
 
-    export async function registerLocalInfo(strategy: Strategy, auth: IUserAuth): Promise<string> {
-        let query = {
-            selector: {}, 
-            fields: [''],
-        };
-        switch (strategy) {
-        case Strategy.FACEBOOK:
-            query = {
-                selector: {
-                    localId: auth.localId,
-                },
-                fields: [
-                    '_id',
-                    'auth',
-                ],
-            };
-            break;
-        default:
-            throw new Error();
+    export async function registerLocalInfo(auth: IUserAuth & nano.MaybeDocument): Promise<string> {
+
+        if (!auth.localId || !auth.displayName) {
+            throw new Error('localIdとdisplayNameが適切に設定されていない \n' + JSON.stringify(auth));
         }
+
+        // 指定されたlocalIdで登録されたデータが存在しないことを確認
+        const query = {
+            selector: {
+                localId: auth.localId,
+            },
+            fields: [
+                '_id',
+                'auth',
+            ],
+        };
         try {
             const response = await findWithPromise(query);
             if (response.docs.length >= 1) {
                 throw new Error('localIdが重複');
             }
-            return await insertWithPromise(auth);
+            return await insertWithPromise(auth, auth._id);
         } catch (e) {
             throw e;
         }
@@ -94,22 +100,22 @@ export namespace AuthDb {
     function createFindQuery(strategy: Strategy, id: string): nano.MangoQuery {
 
         switch (strategy) {
-            case Strategy.FACEBOOK:
-                return {
-                    selector: {
-                        facebook: {
-                            profile: { id }
-                        }
+        case Strategy.FACEBOOK:
+            return {
+                selector: {
+                    facebook: {
+                        profile: { id },
                     },
-                    fields: [
-                        // ※'_rev' を引っ張ってこないようにする。
-                        '_id',
-                        'auth'
-                    ],
-                    limit: 2,
-                };
-            default:
-                throw new Error();
+                },
+                fields: [
+                    // ※'_rev' を引っ張ってこないようにする。
+                    '_id',
+                    'auth',
+                ],
+                limit: 2,
+            };
+        default:
+            throw new Error();
         }
 
     }
@@ -136,21 +142,26 @@ export namespace AuthDb {
 
             if (response.docs.length === 0) {
                 // 未登録ユーザーだったとき
-                auth = { facebook };
+                // 新しく認証情報オブジェクトを作成して保存
+                auth = { auth: { facebook } };
+                auth._id = await insertWithPromise(auth);
 
             } else if (response.docs.length === 1) {
                 // 既存のユーザーだったとき
+                // facebookフィールドのみ更新して保存
                 auth = {
                     ...response.docs[0],
-                    facebook
+                    auth: {
+                        ...response.docs[0].auth,
+                        facebook,
+                    },
                 };
+                await insertWithPromise(auth, auth._id);
 
             } else {
                 // 複数ユーザーが見つかったとき
                 throw new Error(`multiply user-auth data found. facebook id: ${profile.id}`);
             }
-
-            auth._id = await insertWithPromise(auth);
 
             return auth;
         }
