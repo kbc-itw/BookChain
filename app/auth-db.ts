@@ -44,8 +44,8 @@ export namespace AuthDb {
     export function insertWithPromise(auth: IUserAuth): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             authDb.insert(auth, (error, response) => {
-                if (error) resolve(response.id);
-                else reject(error);
+                if (error) reject(error)
+                else resolve(response.id);
             });
         });
     }
@@ -53,8 +53,8 @@ export namespace AuthDb {
 
     function findWithPromise(query: nano.MangoQuery): Promise<nano.MangoResponse<IUserAuth>> {
         return new Promise<nano.MangoResponse<IUserAuth>>((resolve, reject) => {
-            authDb.find(query, (err, response) => {
-                if (err) reject(err);
+            authDb.find(query, (error, response) => {
+                if (error) reject(error);
                 else resolve(response);
             });
         });
