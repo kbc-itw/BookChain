@@ -55,7 +55,7 @@ passport.use(facebookStrategy);
 export function isAuthenticated(req:Request, res:Response, next:NextFunction): void {
     if (process.env.NODE_ENV !== 'production' || req.isAuthenticated()) {
         if (req.user && (!req.user.localId || !req.user.displayName)) {
-            res.redirect('/client/user/register');
+            res.redirect('/client/view/user/register');
         }
         next();
     } else {
