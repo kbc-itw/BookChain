@@ -9,7 +9,7 @@ export function createAuthenticationRouter(): Router {
     // TODO redirect
     router.post('/local', passport.authenticate('local'), (req: Request, res: Response) => res.send(200));
     router.get('/facebook', passport.authenticate('facebook'));
-    router.get('/facebook/callback', passport.authenticate('facebook', { successRedirect: '/client', failureRedirect: '/client/view/login' }));
+    router.get('/facebook/callback', passport.authenticate('facebook', { successRedirect: '/client/view/user/register', failureRedirect: '/client/view/login' }));
 
     return router;
 }
