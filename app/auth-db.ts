@@ -22,10 +22,12 @@ const authDb = nano(`http://${USER_NAME}:${USER_PASSWORD}@${HOST}:${PORT}/${AUTH
 export interface IUserAuth {
     localId?: LocalID;
     displayName?: DisplayName;
-    facebook: {
-        accessToken: string;
-        refreshToken: string;
-        profile: FacebookProfile;
+    auth: {
+        facebook: {
+            accessToken: string;
+            refreshToken: string;
+            profile: FacebookProfile;
+        };
     };
 }
 
@@ -41,12 +43,20 @@ export enum Strategy {
 export namespace AuthDb {
 
 
-    export function insertWithPromise(auth: IUserAuth): Promise<string> {
+    export function insertWithPromise(auth: IUserAuth, id?: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            authDb.insert(auth, (error, response) => {
-                if (error) reject(error)
+
+            const handleResponse = (error: Error, response: nano.DocumentInsertResponse) => {
+                if (error) reject(error);
                 else resolve(response.id);
-            });
+            };
+
+            if (id) {
+                authDb.insert(auth, id, handleResponse);
+            } else {
+                authDb.insert(auth, handleResponse);
+            }
+
         });
     }
 
@@ -85,7 +95,7 @@ export namespace AuthDb {
             if (response.docs.length >= 1) {
                 throw new Error('localIdが重複');
             }
-            return await insertWithPromise(auth);
+            return await insertWithPromise(auth, auth._id);
         } catch (e) {
             throw e;
         }
@@ -104,7 +114,7 @@ export namespace AuthDb {
                     fields: [
                         // ※'_rev' を引っ張ってこないようにする。
                         '_id',
-                        'auth'
+                        'auth',
                     ],
                     limit: 2,
                 };
@@ -136,21 +146,21 @@ export namespace AuthDb {
 
             if (response.docs.length === 0) {
                 // 未登録ユーザーだったとき
-                auth = { facebook };
+                auth = { auth: { facebook } };
+                auth._id = await insertWithPromise(auth);
 
             } else if (response.docs.length === 1) {
                 // 既存のユーザーだったとき
                 auth = {
                     ...response.docs[0],
-                    facebook
+                    facebook,
                 };
+                await insertWithPromise(auth, auth._id);
 
             } else {
                 // 複数ユーザーが見つかったとき
                 throw new Error(`multiply user-auth data found. facebook id: ${profile.id}`);
             }
-
-            auth._id = await insertWithPromise(auth);
 
             return auth;
         }
