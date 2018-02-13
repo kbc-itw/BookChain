@@ -13,7 +13,7 @@ const host = config.get<IServerConfig>('server').host;
 
 export function createRegisterRouter(
     invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
-    registerLocalInfo(auth: IUserAuth & MaybeDocument) => Promise<string>,
+    registerLocalInfo: (auth: IUserAuth & MaybeDocument) => Promise<string>,
 ): Router {
     const registerRouter = Router();
     registerRouter.post('/', isAuthenticated, async (req: Request, res: Response) => {
