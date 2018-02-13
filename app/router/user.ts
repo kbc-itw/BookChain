@@ -34,7 +34,7 @@ export function createUserRouter(
         if (req.user && req.user.localId && req.user.displayName) {
             res.status(200).send({ localId: req.user.localId, displayName: req.user.displayName });
         } else {
-            res.send(401).send({ error: true });
+            res.status(401).send({ error: true });
         }
     });
     

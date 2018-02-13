@@ -22,7 +22,7 @@ import { UUID } from './util';
 const secret = require('../config/secrets.json') as ISecrets;
 
 /**
- * listenで起動可能なexpressアプリケーションを返す。
+ * listenでe('/aut起動可能なexpressアプリケーションを返す。
  * 呼び出しごとに別のアプリケーションを生成することに注意。
  * @author kbc14a12
  */
@@ -36,7 +36,7 @@ export function bootstrap(map: Map<UUID, SocketRoom>):express.Application {
 
 function configureRoute(app: express.Application, map: Map<UUID, SocketRoom>) {
     app.use('/user', createUserRouter(chainCodeQuery, chainCodeInvoke));
-    app.use('/user/register', createRegisterRouter(AuthDb.registerLocalInfo));
+    app.use('/user/register', createRegisterRouter(chainCodeInvoke, AuthDb.registerLocalInfo));
     app.use('/auth', createAuthenticationRouter());
     app.use('/trading', createTradingsRouter(chainCodeQuery, chainCodeInvoke));
     app.use('/ownership', createOwnershipRouter(chainCodeQuery, chainCodeInvoke));

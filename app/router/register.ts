@@ -6,9 +6,14 @@ import { ErrorMessages } from '../messages';
 import { isAuthenticated } from '../authenticator';
 import { AuthDb, IUserAuth, Strategy } from '../auth-db';
 import { MaybeDocument } from 'nano';
+import * as config from 'config';
+import { IServerConfig } from '../config/IServerConfig';
+
+const host = config.get<IServerConfig>('server').host;
 
 export function createRegisterRouter(
-    registerLocalInfo:(auth: IUserAuth & MaybeDocument) => Promise<string>,
+    invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
+    registerLocalInfo(auth: IUserAuth & MaybeDocument) => Promise<string>,
 ): Router {
     const registerRouter = Router();
     registerRouter.post('/', isAuthenticated, async (req: Request, res: Response) => {
@@ -49,6 +54,11 @@ export function createRegisterRouter(
             req.user.localId = localId;
             req.user.displayName = displayName;
             await registerLocalInfo(req.user);
+            await invokeFunction({
+                ...queryBase,
+                fcn: 'createUser',
+                args:[localId, host, displayName],
+            });
             res.status(200).send();
         } catch (e) {
             logger.info('登録失敗');
@@ -60,3 +70,11 @@ export function createRegisterRouter(
     logger.trace('createRegisterRouter');
     return registerRouter;
 }
+
+const queryBase = {
+    chaincodeId:'user',
+    // TODO transactionIDは不要であるはずだ
+    txId: {
+        getTransactionID(): string {throw new Error('呼ばれないはずだ'); },
+    },
+};
