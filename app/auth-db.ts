@@ -103,8 +103,10 @@ export namespace AuthDb {
         case Strategy.FACEBOOK:
             return {
                 selector: {
-                    facebook: {
-                        profile: { id },
+                    auth: {
+                        facebook: {
+                            profile: { id },
+                        },
                     },
                 },
                 fields: [
