@@ -52,6 +52,7 @@ export function createRegisterRouter(
             res.status(200).send();
         } catch (e) {
             logger.info('登録失敗');
+            logger.error(`${e.tostring()}`);
             res.status(400).send(e.toString());
         }
 
