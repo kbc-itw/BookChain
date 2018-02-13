@@ -37,11 +37,13 @@ export function bootstrap(map: Map<UUID, SocketRoom>):express.Application {
 function configureRoute(app: express.Application, map: Map<UUID, SocketRoom>) {
     app.use('/user', createUserRouter(chainCodeQuery, chainCodeInvoke));
     app.use('/user/register', createRegisterRouter(AuthDb.registerLocalInfo));
-    app.use('/auth', createAuthenticationRouter);
+    app.use('/auth', createAuthenticationRouter());
     app.use('/trading', createTradingsRouter(chainCodeQuery, chainCodeInvoke));
     app.use('/ownership', createOwnershipRouter(chainCodeQuery, chainCodeInvoke));
     app.use('/rooms', createRoomsRouter(map, chainCodeQuery, chainCodeInvoke));
     app.use('/client', express.static('/opt/BookChain-Client/dist'));
+    app.get('/client/*', (req, res) => res.sendFile('/opt/BookChain-Client/dist/index.html'));
+
 }
 
 export function configureUse(app: express.Application) {
