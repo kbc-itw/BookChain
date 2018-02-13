@@ -70,26 +70,22 @@ export namespace AuthDb {
         });
     }
 
-    export async function registerLocalInfo(strategy: Strategy, auth: IUserAuth): Promise<string> {
-        let query = {
-            selector: {}, 
-            fields: [''],
-        };
-        switch (strategy) {
-        case Strategy.FACEBOOK:
-            query = {
-                selector: {
-                    localId: auth.localId,
-                },
-                fields: [
-                    '_id',
-                    'auth',
-                ],
-            };
-            break;
-        default:
-            throw new Error();
+    export async function registerLocalInfo(auth: IUserAuth & nano.MaybeDocument): Promise<string> {
+
+        if (!auth.localId || !auth.displayName) {
+            throw new Error('localIdとdisplayNameが適切に設定されていない \n' + JSON.stringify(auth));
         }
+
+        // 指定されたlocalIdで登録されたデータが存在しないことを確認
+        const query = {
+            selector: {
+                localId: auth.localId,
+            },
+            fields: [
+                '_id',
+                'auth',
+            ],
+        };
         try {
             const response = await findWithPromise(query);
             if (response.docs.length >= 1) {
@@ -104,22 +100,22 @@ export namespace AuthDb {
     function createFindQuery(strategy: Strategy, id: string): nano.MangoQuery {
 
         switch (strategy) {
-            case Strategy.FACEBOOK:
-                return {
-                    selector: {
-                        facebook: {
-                            profile: { id }
-                        }
+        case Strategy.FACEBOOK:
+            return {
+                selector: {
+                    facebook: {
+                        profile: { id },
                     },
-                    fields: [
-                        // ※'_rev' を引っ張ってこないようにする。
-                        '_id',
-                        'auth',
-                    ],
-                    limit: 2,
-                };
-            default:
-                throw new Error();
+                },
+                fields: [
+                    // ※'_rev' を引っ張ってこないようにする。
+                    '_id',
+                    'auth',
+                ],
+                limit: 2,
+            };
+        default:
+            throw new Error();
         }
 
     }
@@ -146,14 +142,19 @@ export namespace AuthDb {
 
             if (response.docs.length === 0) {
                 // 未登録ユーザーだったとき
+                // 新しく認証情報オブジェクトを作成して保存
                 auth = { auth: { facebook } };
                 auth._id = await insertWithPromise(auth);
 
             } else if (response.docs.length === 1) {
                 // 既存のユーザーだったとき
+                // facebookフィールドのみ更新して保存
                 auth = {
                     ...response.docs[0],
-                    facebook,
+                    auth: {
+                        ...response.docs[0].auth,
+                        facebook,
+                    },
                 };
                 await insertWithPromise(auth, auth._id);
 
