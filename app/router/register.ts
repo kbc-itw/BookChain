@@ -5,9 +5,10 @@ import { logger } from '../logger';
 import { ErrorMessages } from '../messages';
 import { isAuthenticated } from '../authenticator';
 import { AuthDb, IUserAuth, Strategy } from '../auth-db';
+import { MaybeDocument } from 'nano';
 
 export function createRegisterRouter(
-    registerLocalInfo:(strategy: Strategy, auth: IUserAuth) => Promise<string>,
+    registerLocalInfo:(auth: IUserAuth & MaybeDocument) => Promise<string>,
 ): Router {
     const registerRouter = Router();
     registerRouter.post('/', isAuthenticated, async (req: Request, res: Response) => {
@@ -47,7 +48,7 @@ export function createRegisterRouter(
         try {
             req.user.localId = localId;
             req.user.displayName = displayName;
-            await registerLocalInfo(Strategy.FACEBOOK, req.user);
+            await registerLocalInfo(req.user);
             res.status(200).send();
         } catch (e) {
             logger.info('登録失敗');

@@ -59,7 +59,7 @@ export function configureUse(app: express.Application) {
             username: secret.couch.USER_NAME,
             password: secret.couch.USER_PASSWORD,
             host: secret.couch.HOST,
-        })
+        }),
     }));
     app.use(bodyParser.json());
     app.use(passport.initialize());
