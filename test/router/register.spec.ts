@@ -13,6 +13,7 @@ import * as bodyParser from 'body-parser';
 import { configureUse } from '../../app/bootstrap';
 import { IUserAuth, Strategy } from '../../app/auth-db';
 import { logger } from '../../app/logger';
+import { MaybeDocument } from 'nano';
 
 chai.use(require('chai-as-promised'));
 
@@ -34,7 +35,7 @@ describe('registerRouter /user/register post', () => {
     });
 
     it('正常系', async () => {
-        app.use('/user/register', createRegisterRouter(async (strategy: Strategy, auth: IUserAuth) => 'Success'));
+        app.use('/user/register', createRegisterRouter(async (auth: IUserAuth & MaybeDocument) => 'Success'));
         try {
             const result = await testPost(server, '/user/register', { localId: 'hoge', displayName: 'ほげ', user:{} });
             chai.expect(result.status).to.be.equal(200);
@@ -45,7 +46,7 @@ describe('registerRouter /user/register post', () => {
     });
 
     it('ステータス不正', async () => {
-        app.use('/user/register', createRegisterRouter(async (strategy: Strategy, auth: IUserAuth) => 'Success'));
+        app.use('/user/register', createRegisterRouter(async (auth: IUserAuth & MaybeDocument) => 'Success'));
         try {
             await chai.expect(testPost(server, '/user/register', { localId: '', displayName: 'ほげ' })).to.be.rejectedWith('Bad Request');
             await chai.expect(testPost(server, '/user/register', { localId: '=', displayName: 'ほげ' })).to.be.rejectedWith('Bad Request');
