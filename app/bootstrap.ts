@@ -42,6 +42,8 @@ function configureRoute(app: express.Application, map: Map<UUID, SocketRoom>) {
     app.use('/ownership', createOwnershipRouter(chainCodeQuery, chainCodeInvoke));
     app.use('/rooms', createRoomsRouter(map, chainCodeQuery, chainCodeInvoke));
     app.use('/client', express.static('/opt/BookChain-Client/dist'));
+    app.get('/client/*', (req, res) => res.sendFile('/opt/BookChain-Client/dist/index.html'));
+
 }
 
 export function configureUse(app: express.Application) {
