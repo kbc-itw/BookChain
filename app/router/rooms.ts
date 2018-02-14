@@ -51,17 +51,25 @@ export function createRoomsRouter(
         }
 
         try {
-            const result = await invokeFunction({
+            const room = {
+                purpose,
+                inviter,
+                host: serverConfig.host,
+                createdAt: new Date().toISOString(),
+                id: uuidv4(),
+            }
+            const id = uuidv4();
+            await invokeFunction({
                 ...invokeBase,
                 fcn: 'createRoom',
-                args: [uuidv4(), purpose, inviter, serverConfig.host, new Date().toISOString()],
+                args: [room.id,, room.purpose, room.inviter, room.host, room.createdAt],
 
             });
-            const room = {
-                room:result,
+            const roomInfo = {
+                room,
                 inviteToken: uuidv4(),
-            }
-            res.status(201).json(room);
+            };
+            res.status(201).json(roomInfo);
         } catch (e) {
             logger.error(`chaincodeエラー ${e}`);
             res.status(500).json({ error: true });
