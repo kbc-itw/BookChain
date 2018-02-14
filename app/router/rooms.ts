@@ -62,7 +62,7 @@ export function createRoomsRouter(
             await invokeFunction({
                 ...invokeBase,
                 fcn: 'createRoom',
-                args: [room.id,, room.purpose, room.inviter, room.host, room.createdAt],
+                args: [room.id, room.purpose, room.inviter, room.host, room.createdAt],
 
             });
             const roomInfo = {
