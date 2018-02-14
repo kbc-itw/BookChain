@@ -81,10 +81,6 @@ export namespace AuthDb {
             selector: {
                 localId: auth.localId,
             },
-            fields: [
-                '_id',
-                'auth',
-            ],
         };
         try {
             const response = await findWithPromise(query);
@@ -109,11 +105,6 @@ export namespace AuthDb {
                         },
                     },
                 },
-                fields: [
-                    // ※'_rev' を引っ張ってこないようにする。
-                    '_id',
-                    'auth',
-                ],
                 limit: 2,
             };
         default:
