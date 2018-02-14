@@ -66,7 +66,7 @@ export function createUserRouter(
             const result = await queryFunction({
                 ...queryBase,
                 fcn:'getUser',
-                args: [host, id],
+                args: [id + '@' + host],
             });
             res.status(200).json(result);
         } catch (e) {
