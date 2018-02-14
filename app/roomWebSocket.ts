@@ -270,7 +270,7 @@ async function commitment(room: SocketRoom, queryFunction: (request: ChaincodeQu
                 args:[trading.id, trading.owner, trading.borrower, trading.isbn, trading.lendAt],
             });
         } else {
-            if (room.room.inviter && room.room.guest) {
+            if (room.room.inviter && room.room.guest && room.isbn) {
                 const result = await queryFunction({
                     ...invokeRentalBase,
                     fcn:'getTradingList',
@@ -386,14 +386,14 @@ export interface SocketRoom {
         readonly host: FQDN;
         readonly purpose: RoomPurpose;
         readonly inviter: Locator;
-        guest: Locator | undefined;
-        readonly createdAt: Date;
-        closedAt: Date | undefined;
+        guest?: Locator | undefined;
+        readonly createdAt: string;
+        closedAt?: string | undefined;
     };
-    isbn: string;
+    isbn?: string | undefined;
     inviterApproved: boolean;
     guestApproved: boolean;
     inviteToken: UUID;
-    inviterSocket : ws | undefined;
-    guestSocket: ws | undefined;
+    inviterSocket? : ws | undefined;
+    guestSocket?: ws | undefined;
 }

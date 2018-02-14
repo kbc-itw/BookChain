@@ -1,5 +1,5 @@
 import { Router, Response, Request } from 'express';
-import { isLocator, isISBN, isRoomPurpose, UUID } from '../util';
+import { isLocator, isISBN, isRoomPurpose, UUID, isFQDN } from '../util';
 import { logger } from '../logger';
 import { ErrorMessages } from '../messages';
 import { IServerConfig } from '../config/IServerConfig';
@@ -57,7 +57,8 @@ export function createRoomsRouter(
                 host: serverConfig.host,
                 createdAt: new Date().toISOString(),
                 id: uuidv4(),
-            }
+            };
+
             const id = uuidv4();
             await invokeFunction({
                 ...invokeBase,
@@ -69,6 +70,14 @@ export function createRoomsRouter(
                 room,
                 inviteToken: uuidv4(),
             };
+
+            const socketRoom = {
+                ...roomInfo,
+                inviterApproved: false,
+                guestApproved: false,
+
+            } as SocketRoom;
+            roomPool.set(room.id, socketRoom);
             res.status(201).json(roomInfo);
         } catch (e) {
             logger.error(`chaincodeエラー ${e}`);
