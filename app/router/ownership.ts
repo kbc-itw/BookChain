@@ -55,7 +55,7 @@ export function createOwnershipRouter(
         try {
             const result = await queryFunction({
                 ...queryBase,
-                fcn: 'getOwnerShipList  ',
+                fcn: 'getOwnershipList  ',
                 args:[owner, isbn, limit, offset],
             });
             res.status(200).json({ result });
