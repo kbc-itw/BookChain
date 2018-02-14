@@ -57,9 +57,11 @@ export function createRoomsRouter(
                 args: [uuidv4(), purpose, inviter, serverConfig.host, new Date().toISOString()],
 
             });
-            result.inviteToken = uuidv4();
-            roomPool.set(result.id, result);
-            res.status(201).json(result);
+            const room = {
+                room:result,
+                inviteToken: uuidv4(),
+            }
+            res.status(201).json(room);
         } catch (e) {
             logger.error(`chaincodeエラー ${e}`);
             res.status(500).json({ error: true });
