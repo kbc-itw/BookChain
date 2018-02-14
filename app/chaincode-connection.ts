@@ -62,7 +62,7 @@ export async function chainCodeQuery(request: ChaincodeQueryRequest): Promise<an
  * @param requestForProposal トランザクション実行用リクエスト
  * @returns トランザクションが成功した場合に解決されるPromise
  */
-export async function chainCodeInvoke(requestForProposal: ChaincodeInvokeRequest): Promise<void> {
+export async function chainCodeInvoke(requestForProposal: ChaincodeInvokeRequest): Promise<any> {
     await prepareConnection();
 
     const transactionID = client.newTransactionID();
@@ -121,6 +121,7 @@ export async function chainCodeInvoke(requestForProposal: ChaincodeInvokeRequest
     } else {
         throw new Error('Transaction failed to be committed to the ledger due to :' + results[1].event_status);
     }
+    return results;
 }
 
 interface AESCryptoSuite extends ICryptoSuite {
