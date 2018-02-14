@@ -35,7 +35,7 @@ export function createWebSocketServer(
                 }
             
                 const parsedURL = url.parse(req.url, true);
-                const locatorString = unescape(parsedURL.query.locator);
+                const locatorString = decodeURIComponent(parsedURL.query.locator);
                 const locator = locatorString as Locator;
                 const { id, role, inviteToken } = parsedURL.query;
                 const invalidField = validate({ id, locator, role, inviteToken });

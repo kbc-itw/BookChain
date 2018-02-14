@@ -15,7 +15,7 @@ export function createTradingsRouter(
 
     router.get('/', isAuthenticated, async (req: Request, res: Response) => {
         let {borrower, isbn, isreturned, limit, offset } = req.query;
-        const ownerString = unescape(req.query.owner);
+        const ownerString = decodeURIComponent(req.query.owner);
         let owner = ownerString as Locator;
         let invalidFlag = false;
         const invalidRequestMessage = {
