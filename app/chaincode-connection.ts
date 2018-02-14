@@ -93,13 +93,13 @@ export async function chainCodeInvoke(requestForProposal: ChaincodeInvokeRequest
     eventHub.setPeerAddr(`grpc://${hostName}:${eventHubPort}`, {});
 
     promises.push(new Promise((resolve, reject) => {
-        const handle = setTimeout(() => {
-            eventHub.disconnect();
-            resolve({ eventStatus : 'TIMEOUT' });
-        });
+        // const handle = setTimeout(() => {
+        //     eventHub.disconnect();
+        //     resolve({ eventStatus : 'TIMEOUT' });
+        // });
         eventHub.connect();
         eventHub.registerTxEvent(transactionIDString, (transaction, code) => {
-            clearTimeout(handle);
+            // clearTimeout(handle);
             eventHub.unregisterTxEvent(transactionIDString);
             eventHub.disconnect();
             resolve({ event_status : code, transactionID: transactionIDString });
