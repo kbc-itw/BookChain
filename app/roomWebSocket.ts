@@ -394,6 +394,6 @@ export interface SocketRoom {
     inviterApproved: boolean;
     guestApproved: boolean;
     inviteToken: UUID;
-    inviterSocket : ws | undkefined;
+    inviterSocket : ws | undefined;
     guestSocket: ws | undefined;
 }
