@@ -22,8 +22,8 @@ export function createWebSocketServer(
     invokeFunction: (request: ChaincodeInvokeRequest) => Promise<void>,
 ): Promise<ws.Server> {
     return new Promise<ws.Server>((resolve, reject) => {
-        const { port, host } = config.get<IWebSocketConfig>('webSocket');
-        const wss = new ws.Server({ server, path, port, host }, () => {
+        const { port } = config.get<IWebSocketConfig>('webSocket');
+        const wss = new ws.Server({ server, path, port }, () => {
             wss.on('connection', async (socket: ws, req: IncomingMessage) => {
                 if (!req.url) {
                     // req.urlはundefinedの可能性がある
@@ -394,6 +394,6 @@ export interface SocketRoom {
     inviterApproved: boolean;
     guestApproved: boolean;
     inviteToken: UUID;
-    inviterSocket : ws | undefined;
+    inviterSocket : ws | undkefined;
     guestSocket: ws | undefined;
 }
