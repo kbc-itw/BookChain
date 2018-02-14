@@ -19,7 +19,7 @@ export function createRoomsRouter(
 
     router.post('/', isAuthenticated, async(req: Request, res: Response) => {
         const purpose = req.query.purpose;
-        const inviter = unescape(req.query.inviter);
+        const inviter = decodeURIComponent(req.query.inviter);
         const serverConfig = config.get<IServerConfig>('server');
         let invalidFlag = false;
         const invalidRequestMessage = {
